@@ -1,8 +1,13 @@
 import { createApp } from "vue";
-import App from "./App.vue";
+import Login from "./components/Login.vue";
 
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
-createApp(App)
-  .use(ElementPlus)
-  .mount("#app");
+
+import { router } from "./router.js"
+
+
+const app = createApp(Login);
+app.use(router);
+app.use(ElementPlus);
+app.mount("#app");

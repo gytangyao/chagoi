@@ -13,30 +13,32 @@
           backgroundSize: '100% 100%',
         }"></div>
       <div class="right">
-        <el-form :model="ruleForm2"
-          :rules="rules2"
+        <el-form :model="loginForm"
+          :rules="loginFormRules"
           status-icon
-          ref="ruleForm2"
+          ref="loginForm"
           label-position="left"
           label-width="0px"
           class="loginForm">
           <img class="logo"
             :src="logoImage" />
-          <span class="title">系统登录</span>
+          <span class="title">微喵虎斑管理系统</span>
           <el-form-item prop="username">
             <el-input type="text"
-              v-model="ruleForm2.username"
+              v-model="loginForm.username"
               auto-complete="off"
+              prefix-icon="el-icon-user"
               placeholder="用户名"></el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input type="password"
-              v-model="ruleForm2.password"
+              prefix-icon="el-icon-lock"
+              v-model="loginForm.password"
               auto-complete="off"
               placeholder="密码"></el-input>
           </el-form-item>
-          <el-checkbox v-model="checked"
-            class="rememberme">记住密码</el-checkbox>
+          <el-checkbox v-model="loginForm.rememberme"
+            class="rememberme">记住登录凭证 </el-checkbox>
           <el-form-item style="width: 100%">
             <el-button type="primary"
               style="width: 100%"
@@ -64,6 +66,9 @@
 
 <script>
 import { CircleClose } from "@element-plus/icons";
+import { login, client_secret } from '../utils/http'
+import { Encrypt } from '../utils/index'
+
 
 export default {
   data() {
@@ -72,20 +77,21 @@ export default {
       backgroundImage: require("./../assets/Images/loginbg.png"),
       leftBackgroundImage: require("./../assets/Images/loginFormLeft.png"),
       logining: false,
-      ruleForm2: {
+      loginForm: {
         username: "admin",
         password: "123456",
+        rememberme: true
       },
-      rules2: {
+      loginFormRules: {
         username: [
           {
             required: true,
-            message: "please enter your account",
+            message: "请输入登录用户名",
             trigger: "blur",
           },
         ],
         password: [
-          { required: true, message: "enter your password", trigger: "blur" },
+          { required: true, message: "请输入密码", trigger: "blur" },
         ],
       },
       checked: false,
@@ -93,22 +99,22 @@ export default {
   },
   methods: {
     handleSubmit() {
-      this.$refs.ruleForm2.validate((valid) => {
+      this.$refs.loginForm.validate((valid) => {
         if (valid) {
           this.logining = true;
-          if (
-            this.ruleForm2.username === "admin" &&
-            this.ruleForm2.password === "123456"
-          ) {
-            this.logining = false;
-            sessionStorage.setItem("user", this.ruleForm2.username);
-            this.$router.push({ path: "/" });
-          } else {
-            this.logining = false;
-            this.$alert("username or password wrong!", "info", {
-              confirmButtonText: "ok",
-            });
-          }
+          let params = {
+            grant_type: "password",
+            username: this.loginForm.username,
+            password: Encrypt(this.loginForm.password),
+            client_id: "admin",
+            client_secret: Encrypt(client_secret),
+          };
+          login(params).then(res => {
+            alert(res);
+          });
+          this.logining = false;
+          sessionStorage.setItem("user", this.loginForm.username);
+          this.$router.push({ path: "/" });
         } else {
           console.log("error submit!");
           return false;
@@ -120,7 +126,7 @@ export default {
     },
   },
   components: {
-    CircleClose,
+    CircleClose
   },
 };
 </script>
@@ -155,7 +161,8 @@ export default {
 
 .loginForm {
   width: 100%;
-  margin: 24px;
+  margin-left: 60px;
+  margin-right: 60px;
   display: flex;
   flex-direction: column;
 }
@@ -170,6 +177,7 @@ export default {
 .loginForm .title {
   align-self: center;
   font-size: 17px;
+  font-weight: "Regular";
   font-family: PingFangSC, PingFangSC-Regular;
   font-weight: 400;
   text-align: left;
