@@ -1,122 +1,54 @@
 import axios from 'axios'
-import {
-  ElMessage,
-  ElLoading
-} from 'element-plus';
-import NProgress from 'nprogress' // progress bar
-import 'nprogress/nprogress.css' // progress bar style
-NProgress.configure({
-  showSpinner: false
-}) // NProgress Configuration
-// const CALTIME = 300; //防止重复请求时间
-//环境固定后端链接
-let baseUrl = 'https://api-saas.wemew.cn/';
-// let baseUrl = 'http://192.168.102.88:8080/';
-// let baseUrl = 'http://192.168.9.180:8080/';
-// let baseUrl = 'http://localhost:3000';
-// let baseUrl = 'http://192.168.9.159:8080/';
-// let baseUrl = 'http://192.168.101.32:8080/';
-// let baseUrl = 'http://192.168.9.171:8080/';
-// let baseUrl = 'http://192.168.9.171:8080/';      // 乔艺
-// let baseUrl = 'http://192.168.100.135:8080/';   //江庭宇
+import { ElMessage, ElLoading } from 'element-plus';
+import router from '../router'
 
-let whiteArr = [
-  // '/chagoi-bar-order/v1/couponSaasPackage/selectAll', 
-  // '/chagoi-bar-order/v1/couponSaasPackage/selectOne',
-  // '/chagoi-bar-order/v1/couponSaasPackage/stop',
-  '/chagoi-bar-order/v1/storeMarket/getConfig',
-  '/chagoi-bar-order/v1/storeMarket/edit',
-]; //本次需要和后端本地调试的接口列表，提交时需要清空
+let baseUrl = 'https://api-saas.wemew.cn/';
 let client_secret = '123456';
+//同时发送多次请求处理
+let needLoadingRequestCount = 0
+axios.defaults.baseURL = baseUrl;
+
+
 if (process.env.NODE_ENV === 'production') {
   baseUrl = 'https://api-saas.wemew.com/'
   client_secret = 'chagoi@2020';
-  whiteArr = [];
 }
 if (process.env.NODE_ENV === 'test') {
   baseUrl = 'https://api-saas.wemew.cn/'
-  whiteArr = [];
 }
 if (process.env.NODE_ENV === 'release') {
   baseUrl = 'https://test-api-saas.wemew.cn/'
   client_secret = 'chagoi@2020';
-  whiteArr = [];
 }
-//请求域名
-let ajaxUrl = baseUrl;
-
-// axios.defaults.timeout = 10000;
-//上传文件链接
-let upLoadUrl = baseUrl + 'chagoi-bar-order/v1/File/simpleUploadImg';
-axios.defaults.baseURL = baseUrl;
 
 export {
-  upLoadUrl
-}
-
-//点餐二维码
-let orderImg = baseUrl;
-let wx_URL = 'https://bs.wemew.cn/';
-let orderImgs = baseUrl + 'chagoi-bar-order/weixin/pay/qrcode?text='
-let orderLink = 'https://test.wemew.cn/wemew/wechat/html/h5-order-auth.html';
-if (process.env.NODE_ENV === 'production') {
-  orderLink = 'https://weixin.wemew.com/wemew/wechat/html/h5-order-auth.html'
-  orderImg = "https://m-saas.wemew.com/"
-  wx_URL = 'https://bs.wemew.com/'
-}
-if (process.env.NODE_ENV === 'test') {
-  orderImg = "https://m-saas.wemew.cn/"
-  wx_URL = 'https://bs.wemew.cn/'
-}
-if (process.env.NODE_ENV === 'release') {
-  orderLink = 'https://weixin.wemew.com/wemew/wechat/html/h5-order-auth.html'
-  orderImg = "https://test-m-saas.wemew.cn/"
-  wx_URL = 'https://bs.wemew.cn/'
-}
-export {
-  orderImg,
-  orderImgs,
-  orderLink,
-  wx_URL
-}
-
-
-
-export {
-  ajaxUrl,
   client_secret
 }
 
-//同时发送多次请求处理
-let needLoadingRequestCount = 0
+
 
 function tryShowFullScreenLoading() {
   if (needLoadingRequestCount === 0) {
     startLoading()
-    NProgress.start()
   }
   needLoadingRequestCount++
 }
 
 function tryHideFullScreenLoading() {
   if (needLoadingRequestCount <= 0) return
-
   needLoadingRequestCount--
   if (needLoadingRequestCount === 0) {
     endLoading()
-    NProgress.done()
   }
 }
 //loading初始化与关闭
 let loading = ''
-
 function startLoading() {
   loading = ElLoading.service({
     lock: true,
     customClass: 'create-isLoading',
     text: '数据加载中,请稍后..',
-    background: 'rgba(0, 0, 0, 0)',
-    spinner: 'cus_style1_loading'
+    background: 'rgba(0, 0, 0, 0)'
   })
 }
 
@@ -124,112 +56,23 @@ function endLoading() {
   loading.close()
 }
 
-// 正在进行中的请求列表
-// let reqList = []
-//白名单方法
-// function whiteList(url) {
-//     let bl = false;
-//     if (/^export$/i.test(url)) bl = true;
-//     if (url.indexOf('wx/key/qrcode') !== -1) bl = true;
-//     return bl;
-// }
-/**
- * 阻止重复请求
- * @param {array} reqList - 请求缓存列表
- * @param {string} url - 当前请求地址
- * @param {function} cancel - 请求中断函数
- * @param {string} errorMessage - 请求中断时需要显示的错误信息
- */
-// const stopRepeatRequest = function (reqList, url, cancel, errorMessage) {
-//     const errorMsg = errorMessage || ''
-//     for (let i = 0; i < reqList.length; i++) {
-//       if (reqList[i] === url) {
-//         cancel(errorMsg)
-//         return
-//       }
-//     }
-//     console.log(url)
-//     console.log(whiteList(url))
-//     if (whiteList(url)) { //导出接口，微信公众号点餐二维码
-//         return
-//     }
-//     reqList.push(url)
-//   }
 
-/**
-* 允许某个请求可以继续进行
-* @param {array} reqList 全部请求列表
-* @param {string} url 请求地址
-*/
-// const allowRequest = function (reqList, url) {
-//     for (let i = 0; i < reqList.length; i++) {
-//       if (reqList[i] === url) {
-//         reqList.splice(i, 1)
-//         break
-//       }
-//     }
-//   }
 // axios请求拦截器
 axios.interceptors.request.use((config) => {
   if (localStorage.getItem("toToken")) {
     config.headers.Authorization = 'Bearer ' + localStorage.getItem("toToken");
   }
-  // if (config.url == '/chagoi-bar-order/wx/key/getCouponQrcode') {
-  //     config.baseURL = 'http://192.168.101.31:8080'
-  //     console.log(config)
-  // }
-
-  if (config.url != '/chagoi-bar-order/v1/SmsAccount/queryPayStatus') {
-    if (!config.hidLoading) {
-      tryShowFullScreenLoading()
-    }
+  if (!config.hidLoading) {
+    tryShowFullScreenLoading()
   }
-  //处理接口字段
-  if (config.data) {
-    let data = config.data;
-    if (data.storeId) {
-      data.storeid = data.storeId
-    } else if (data.storeid) {
-      data.storeId = data.storeid
-    }
-    if (data.beginTime) {
-      data.startTime = data.beginTime
-    } else if (data.startTime) {
-      data.beginTime = data.startTime
-    }
-    if (data.pageNum) {
-      data.pageNo = data.pageNum
-    } else if (data.pageNo) {
-      data.pageNum = data.pageNo
-    }
-    config.data = data;
-  }
-
-  // if (config.url.includes('queryMallAndMemberByTypeList')){
-  //     config.baseURL = 'http://192.168.102.88:8080/'
-  // }
-  if (whiteArr.includes(config.url)) {
-    config.baseURL = 'http://192.168.101.31:8080/'
-  }
-  // let cancel
-  // 设置cancelToken对象
-  // config.cancelToken = new axios.CancelToken(function(c) {
-  //     cancel = c
-  // })
-  // 阻止重复请求。当上个请求未完成时，相同的请求不会进行
-  // stopRepeatRequest(reqList, config.url, cancel, `${config.url} 请求被中断`)
   return config
 }, (error) => {
   return Promise.reject(error)
 })
-import router from '../router'
+
 // axios响应拦截器
 axios.interceptors.response.use(function (response) {
   console.log('response', response)
-  // 增加延迟，相同请求不得在短时间内重复发送
-  //   allowRequest(reqList, response.config.url)
-  // setTimeout(() => {
-  // }, CALTIME)
   tryHideFullScreenLoading()
   if (response.data.responseCode == 200 || response.config.responseType == 'blob') {
     return response.data;
@@ -2132,11 +1975,8 @@ export async function exportRepositoryCheckList(data) {
 //     return apiByGet('chagoi-bar-order/v1/File/mallStorageCheck', data)
 // }
 
-//导入盘存
-let uploadStock = ajaxUrl + 'chagoi-bar-order/v1/File/mallStorageCheck';
-export {
-  uploadStock
-}
+
+
 
 // 上传盘存对比数据
 export async function addCheckMall(data) {
