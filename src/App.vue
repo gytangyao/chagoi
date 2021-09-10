@@ -1,5 +1,5 @@
 <template>
-  <el-button>Main.vue</el-button>
+  <router-view></router-view>
 </template>
 
 <script>

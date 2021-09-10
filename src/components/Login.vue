@@ -69,7 +69,6 @@ import { CircleClose } from "@element-plus/icons";
 import { login, client_secret } from '../utils/http'
 import { Encrypt } from '../utils/index'
 
-
 export default {
   data() {
     return {
@@ -110,11 +109,12 @@ export default {
             client_secret: Encrypt(client_secret),
           };
           login(params).then(res => {
-            alert(res);
+            console.log(res);
+            //alert(res);
           });
           this.logining = false;
-          sessionStorage.setItem("user", this.loginForm.username);
-          this.$router.push({ path: "/" });
+          //sessionStorage.setItem("user", this.loginForm.username);
+          this.$router.push('/main')
         } else {
           console.log("error submit!");
           return false;

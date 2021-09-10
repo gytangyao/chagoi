@@ -1,5 +1,5 @@
 <template>
-  <el-button>Main.vue</el-button>
+  <span>Setting</span>
 </template>
 
 <script>
