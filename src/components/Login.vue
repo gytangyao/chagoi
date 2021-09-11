@@ -25,6 +25,7 @@
           <span class="title">微喵虎斑管理系统</span>
           <el-form-item prop="username">
             <el-input type="text"
+              ref="username"
               v-model="loginForm.username"
               auto-complete="off"
               prefix-icon="el-icon-user"
@@ -32,6 +33,7 @@
           </el-form-item>
           <el-form-item prop="password">
             <el-input type="password"
+              ref="password"
               prefix-icon="el-icon-lock"
               v-model="loginForm.password"
               auto-complete="off"
@@ -43,8 +45,7 @@
             <el-button type="primary"
               style="width: 100%"
               class="loginButton"
-              @click="handleSubmit"
-              :loading="logining">登录</el-button>
+              @click="handleSubmit">登录</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -70,15 +71,25 @@ import { login, client_secret } from '../utils/http'
 import { Encrypt } from '../utils/index'
 
 export default {
+  mounted() {
+    if (this.loginForm.username === "") {
+      this.$refs.username.focus();
+    } else if (this.loginForm.password === "") {
+      this.$refs.password.focus();
+    }
+    window.addEventListener('keydown', (this.keyDown));
+  },
+  unmounted() {
+    window.removeEventListener('keydown', this.keyDown, false);
+  },
   data() {
     return {
       logoImage: require("./../assets/Images/cl.png"),
       backgroundImage: require("./../assets/Images/loginbg.png"),
       leftBackgroundImage: require("./../assets/Images/loginFormLeft.png"),
-      logining: false,
       loginForm: {
-        username: "admin",
-        password: "123456",
+        username: "18900000001",
+        password: "111111",
         rememberme: true
       },
       loginFormRules: {
@@ -97,28 +108,36 @@ export default {
     };
   },
   methods: {
+    keyDown(e) {
+      if (e.keyCode == 13) {
+        this.handleSubmit();
+      }
+    },
+
+    login() {
+      return new Promise(resolve => {
+        let params = {
+          grant_type: "password",
+          username: this.loginForm.username,
+          password: Encrypt(this.loginForm.password),
+          client_id: "windons",
+          client_secret: Encrypt(client_secret),
+        };
+        login(params).then(res => {
+          let token = res.data.token;
+          sessionStorage.setItem("token", token);
+          resolve();
+        });
+      });
+    },
     handleSubmit() {
       this.$refs.loginForm.validate((valid) => {
-        if (valid) {
-          this.logining = true;
-          let params = {
-            grant_type: "password",
-            username: this.loginForm.username,
-            password: Encrypt(this.loginForm.password),
-            client_id: "admin",
-            client_secret: Encrypt(client_secret),
-          };
-          login(params).then(res => {
-            console.log(res);
-            //alert(res);
-          });
-          this.logining = false;
-          //sessionStorage.setItem("user", this.loginForm.username);
-          this.$router.push('/main')
-        } else {
-          console.log("error submit!");
+        if (!valid) {
           return false;
         }
+        this.login().then(prev => {
+          console.log(prev)
+        }).catch(err => { alert(err) });
       });
     },
     exitApp() {

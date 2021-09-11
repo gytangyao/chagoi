@@ -1,9 +1,9 @@
 import axios from 'axios'
 import { ElMessage, ElLoading } from 'element-plus';
-import router from '../router'
+import router from './router'
 
 let baseUrl = 'https://api-saas.wemew.cn/';
-let client_secret = '123456';
+let client_secret = 'windows@2020';
 //同时发送多次请求处理
 let needLoadingRequestCount = 0
 axios.defaults.baseURL = baseUrl;
@@ -103,7 +103,7 @@ axios.interceptors.response.use(function (response) {
             type: 'error',
             center: true
           });
-          router.push('/login')
+          router.push('/')
           break;
         // case 401: ElMessage ({ message: 'token失效，请重新登录(401)', type: 'error', center: true }); 
         //     window.location.href = "/login?redirect=123";
@@ -593,6 +593,13 @@ export async function updateStoreSwitch(data) {
 export function login(data) {
   return apiByPostQueryString("/chagoi-auth-service/oauth/token", data)
 }
+
+
+export function findDeviceUserInfo(data) {
+  return apiByPostQueryString("/v1/device/findDeviceUserInfo", data)
+}
+
+
 
 //修改密码
 export function changePwd(data) {
