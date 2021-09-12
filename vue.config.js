@@ -3,7 +3,7 @@ module.exports = {
     electronBuilder: {
       nodeIntegration: true
     },
-    externals: ['electron-edge-js']
+    externals: []
   }
 }
 

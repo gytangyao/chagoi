@@ -68,7 +68,6 @@
 <script>
 import { CircleClose } from "@element-plus/icons";
 import { login, client_secret } from '../utils/http'
-import { helloWorld } from '../utils/edge'
 import { Encrypt } from '../utils/index'
 
 export default {
@@ -132,12 +131,6 @@ export default {
       });
     },
     handleSubmit() {
-
-      helloWorld("Call .net method from DLL", function (err, result) {
-        if (err) throw err;
-        console.log(result);
-      });
-
       this.$refs.loginForm.validate((valid) => {
         if (!valid) {
           return false;
