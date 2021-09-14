@@ -4,9 +4,12 @@
       backgroundImage: 'url(' + backgroundImage + ')',
       backgroundRepeat: 'no-repeat',
       backgroundSize: '100% 100%',
-    }"></div>
+    }">
+    <span style="color:red;fontsize:20px">我日{{isRuning}}</span>
+  </div>
 </template>
 <script>
+import { mapState } from 'vuex'
 export default {
   data() {
     return {
@@ -17,11 +20,13 @@ export default {
   mounted() {
     this.initSystem();
   },
-
   methods: {
     initSystem() {
-
     }
+  }, computed: {
+    ...mapState({
+      isRuning: state => state.native_ws.isRuning
+    }),
   }
 }
 </script>
