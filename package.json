@@ -53,8 +53,5 @@
     "last 2 versions",
     "not dead"
   ],
-  "__npminstall_done": false,
-  "build": {
-    "from": "./native/"
-  }
+  "__npminstall_done": false
 }

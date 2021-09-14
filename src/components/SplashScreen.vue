@@ -10,6 +10,7 @@
 </template>
 <script>
 import { mapState } from 'vuex'
+import path from 'path'
 const exec = require('child_process').exec
 export default {
   data() {
@@ -24,9 +25,12 @@ export default {
     initSystem() {
       let self = this;
       //启动通讯进程
-      //let filePath = 'D:\\chagoi_native-master\\chagoi.native.core\\bin\\Debug\netcoreapp3.1\\chagoi.native.core.exe';
-      let cmdStr = "dotnet D:\\chagoi_native-master\\chagoi.native.core\\bin\\Debug\\netcoreapp3.1\\chagoi.native.core.dll";
-      let workerProcess = exec(cmdStr)
+      let cmdStr = path.join(process.cwd(), '/resources/native/chagoi.native.core.dll')
+      if (process.env.NODE_ENV === 'development') {
+        cmdStr = path.join(process.cwd(), '/native/chagoi.native.core.dll')
+      }
+      console.log(cmdStr);
+      let workerProcess = exec(`dotnet ${cmdStr}`)
       // 打印正常的后台可执行程序输出
       workerProcess.stdout.on('data', function (data) {
         console.log('stdout: ' + data)
