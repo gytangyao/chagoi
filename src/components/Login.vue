@@ -67,10 +67,13 @@
 
 <script>
 import { CircleClose } from "@element-plus/icons";
-import { login, client_secret } from '../utils/http'
-import { Encrypt } from '../utils/index'
-
+import { login, findDeviceUserInfo, native_QueryDevice, client_secret } from '../utils/http'
+import { Encrypt, Decrypt } from '../utils/index'
+const desKey = "3rycbnju";
 export default {
+  created() {
+    this.afterViewLoadedInit();
+  },
   mounted() {
     if (this.loginForm.username === "") {
       this.$refs.username.focus();
@@ -88,9 +91,14 @@ export default {
       backgroundImage: require("./../assets/Images/loginbg.png"),
       leftBackgroundImage: require("./../assets/Images/loginFormLeft.png"),
       loginForm: {
-        username: "18900000001",
-        password: "111111",
+        username: "",
+        password: "",
         rememberme: true
+      },
+      deviceEntity: {
+        RememberAccount: false,
+        Uid: null,
+        Pwd: null
       },
       loginFormRules: {
         username: [
@@ -113,7 +121,23 @@ export default {
         this.handleSubmit();
       }
     },
-
+    afterViewLoadedInit() {
+      let params = {};
+      //从本地数据库中读取用户名和密码
+      native_QueryDevice(params).then(res => {
+        var data = res.data;
+        if (data && data.Uid) {
+          this.loginForm.username = Decrypt(data.Uid, desKey);
+        }
+        if (data && data.Pwd) {
+          this.loginForm.password = Decrypt(data.Pwd, desKey);
+        }
+        if (data && data.RememberAccount) {
+          this.loginForm.resolve = data.RememberAccount;
+        }
+      });
+    },
+    //登录
     login() {
       return new Promise(resolve => {
         let params = {
@@ -124,19 +148,47 @@ export default {
           client_secret: Encrypt(client_secret),
         };
         login(params).then(res => {
+
+          this.deviceEntity.RememberAccount = this.loginForm.rememberme;
+          if (this.loginForm.rememberme) {
+            this.deviceEntity.Uid = Encrypt(this.loginForm.username, desKey);
+            this.deviceEntity.Pwd = Encrypt(this.loginForm.password, desKey);
+          } else {
+            this.deviceEntity.Uid = null;
+            this.deviceEntity.Pwd = null;
+          }
+
           let token = res.data.token;
-          sessionStorage.setItem("token", token);
+          let sureName = res.data.nickName;
+          localStorage.setItem("toToken", token);
+          this.$store.commit('memoryCache/setAccessToken', token)
+          this.$store.commit('memoryCache/setSureName', sureName)
           resolve();
         });
       });
     },
+    //查找设备,门店信息
+    findDeviceUserInfo() {
+      return new Promise(resolve => {
+        let params = {};
+        findDeviceUserInfo(params).then(res => {
+          let data = res.data;
+          this.$store.commit('memoryCache/setStoreId', data.storeBean.id)
+          this.$store.commit('memoryCache/setStoreName', data.storeBean.storeName)
+          this.$store.commit('memoryCache/setUserId', data.user.userId)
+          this.$store.commit('memoryCache/setUserName', data.user.userName)
+          resolve();
+        });
+      });
+    },
+    //登录按钮点击
     handleSubmit() {
       this.$refs.loginForm.validate((valid) => {
         if (!valid) {
           return false;
         }
-        this.login().then(prev => {
-          console.log(prev)
+        this.login().then(() => {
+          return this.findDeviceUserInfo();
         }).catch(err => { alert(err) });
       });
     },

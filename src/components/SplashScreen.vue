@@ -33,7 +33,15 @@ export default {
       let workerProcess = exec(command)
       // 打印正常的后台可执行程序输出
       workerProcess.stdout.on('data', function (data) {
-        console.log('stdout: ' + data)
+        try {
+          let jData = JSON.parse(data);
+          if (jData && jData.httpPort) {
+            self.$store.commit('native_http/setBaseUrl', `http://127.0.0.1:${jData.httpPort}`)
+            self.$router.push("/login");
+          }
+        } catch (error) {
+          console.log(error)
+        }
       })
       // 打印错误的后台可执行程序输出
       workerProcess.stderr.on('data', function (data) {
@@ -45,14 +53,12 @@ export default {
           self.$alert('抱歉,启动通讯进程失败', '通讯失败', {
             confirmButtonText: '确定'
           })
-          return
         }
-        this.$store.commit('native_ws/setIsRuning', true)
       })
     }
   }, computed: {
     ...mapState({
-      isRuning: state => state.native_ws.isRuning
+      isRuning: state => state.native_http.isRuning
     }),
   }
 }

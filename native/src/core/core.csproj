@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -17,7 +18,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="log4net" Version="2.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\share\share.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Jyh">
+      <HintPath>..\lib\Jyh.dll</HintPath>
+    </Reference>
+    <Reference Include="Jyh.Castle.Log4Net">
+      <HintPath>..\lib\Jyh.Castle.Log4Net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="log4net.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 

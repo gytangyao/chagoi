@@ -1,6 +1,5 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading;
+using share;
 
 namespace classic
 {
@@ -8,17 +7,20 @@ namespace classic
     {
         private static void Main()
         {
-            Task.Factory.StartNew(() =>
-            {
-                while (true)
-                {
-                    Console.WriteLine("123213213");
-                    Thread.Sleep(1000);
-                }
-            });
-
-            ManualResetEvent manualResetEvent = new ManualResetEvent(false);
+            var startUp = new StartUp();
+            startUp.SetUp<ChagoiBarWpfModule>();
+            //Task.Factory.StartNew(() =>
+            //{
+            //    while (true)
+            //    {
+            //        Console.WriteLine("123213213");
+            //        Thread.Sleep(1000);
+            //    }
+            //});
+            var manualResetEvent = new ManualResetEvent(false);
             manualResetEvent.WaitOne();
+            startUp.Exit();
         }
+
     }
 }

@@ -42,7 +42,7 @@ export default {
         //监听整个过程中websocket的状态
         console.log('ws连接状态onclose：' + this.ws.readyState);
         console.log(this.$store);
-        this.$store.commit('native_ws/setIsRuning', true)
+        this.$store.commit('native_http/setIsRuning', true)
       }
 
       //监听并处理error事件
