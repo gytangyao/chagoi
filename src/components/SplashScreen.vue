@@ -25,12 +25,12 @@ export default {
     initSystem() {
       let self = this;
       //启动通讯进程
-      let cmdStr = path.join(process.cwd(), '/resources/native/chagoi.native.core.dll')
+      let nativeDir = path.join(process.cwd(), '/resources/native')
       if (process.env.NODE_ENV === 'development') {
-        cmdStr = path.join(process.cwd(), '/native/chagoi.native.core.dll')
+        nativeDir = path.join(process.cwd(), '/native/src/Release')
       }
-      console.log(cmdStr);
-      let workerProcess = exec(`dotnet ${cmdStr}`)
+      let command = process.platform == 'darwin' ? `dotnet ${path.join(nativeDir, "netcoreapp3.1/core.dll")}` : `${path.join(nativeDir, "classic.exe")}`;
+      let workerProcess = exec(command)
       // 打印正常的后台可执行程序输出
       workerProcess.stdout.on('data', function (data) {
         console.log('stdout: ' + data)

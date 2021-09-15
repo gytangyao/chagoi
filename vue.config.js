@@ -4,7 +4,7 @@ module.exports = {
       nodeIntegration: true,
       builderOptions: {
         "extraResources": {
-          "from": "./native/",
+          "from": "./native/src/Release",
           "to": "native"
         }
       }
