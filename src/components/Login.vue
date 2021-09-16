@@ -148,6 +148,12 @@ export default {
         if (data && data.RememberAccount) {
           this.loginForm.resolve = data.RememberAccount;
         }
+
+        this.deviceEntity.RememberAccount = data.RememberAccount;
+        this.deviceEntity.DeviceId = data.DeviceId;
+        this.deviceEntity.DeviceName = data.DeviceName;
+        this.deviceEntity.StoreId = data.StoreId;
+        this.deviceEntity.StoreName = data.StoreName;
       });
     },
     //登录
