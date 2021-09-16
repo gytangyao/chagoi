@@ -6,6 +6,8 @@ using Jyh;
 using Jyh.Castle.Log4Net.Castle.Logging.Log4Net;
 using Jyh.Dependency;
 using Jyh.Modules;
+using Jyh.Threading.BackgroundWorkers;
+using share.BackgroundWorker;
 using share.CoreConst;
 using share.Http;
 
@@ -15,9 +17,13 @@ namespace share
     {
         private JyhBootstrapper _jyhBootstrapper;
         private SimpleHttpServer _simpleHttpServer;
+        private IBackgroundWorkerManager _backgroundWorkerManager;
+
         public void SetUp<TStartupModule>() where TStartupModule : JyhModule
         {
             Environment.CurrentDirectory = new FileInfo(Assembly.GetEntryAssembly()?.Location ?? throw new InvalidOperationException()).DirectoryName ?? string.Empty;
+
+
             //Console.WriteLine($"工作目录已设定为:{Environment.CurrentDirectory}");
 
             var exeDirFullName = new DirectoryInfo(Environment.CurrentDirectory).Parent?.Parent?.FullName;
@@ -47,6 +53,9 @@ namespace share
             IocManager.Instance.IocContainer.AddFacility<LoggingFacility>(m => m.UseLog4Net());
             _jyhBootstrapper.Initialize();
             //Console.WriteLine("JyhBootstrapper初始化完成");
+
+            _backgroundWorkerManager = IocManager.Instance.Resolve<BackgroundWorkerManager>();
+            _backgroundWorkerManager.Add(IocManager.Instance.Resolve<CheckParentProcessExistBackgroundWorker>());
 
             _simpleHttpServer = IocManager.Instance.Resolve<SimpleHttpServer>();
             _simpleHttpServer.Start(7777);
