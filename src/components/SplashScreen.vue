@@ -11,6 +11,8 @@
 <script>
 import { mapState } from 'vuex'
 import path from 'path'
+import { invokeNative } from '../utils/http'
+
 const exec = require('child_process').exec
 export default {
   data() {
@@ -19,10 +21,32 @@ export default {
     };
   },
   mounted() {
-    this.initSystem();
+    //this.$router.push("/login");
+    this.startNativeProcess();
   },
   methods: {
-    initSystem() {
+    //初始化缓存状态
+    initMemoryCache() {
+      let params = { action: "QueryDevice" };
+      invokeNative(params).then(res => {
+        var data = res.data;
+        this.$store.commit('memoryCache/setStoreId', data.StoreId);
+        this.$store.commit('memoryCache/setStoreName', data.StoreName);
+        this.$store.commit('memoryCache/setDeviceId', data.DeviceId);
+        this.$store.commit('memoryCache/setDeviceName', data.DeviceName);
+        this.$store.commit('memoryCache/setGatewayHost', data.GatewayHost);
+        this.$store.commit('memoryCache/setWebsocketUri', data.WebsocketUri);
+      });
+
+      params = { action: "QueryPushSwitch" };
+      invokeNative(params).then(res => {
+        var data = res.data;
+        this.$store.commit('memoryCache/setPushSwitch', data);
+        this.$router.push("/login");
+      });
+    },
+
+    startNativeProcess() {
       let self = this;
       //启动通讯进程
       let nativeDir = path.join(process.cwd(), '/resources/native')
@@ -33,15 +57,8 @@ export default {
       let workerProcess = exec(command)
       // 打印正常的后台可执行程序输出
       workerProcess.stdout.on('data', function (data) {
-        try {
-          let jData = JSON.parse(data);
-          if (jData && jData.httpPort) {
-            self.$store.commit('native_http/setBaseUrl', `http://127.0.0.1:${jData.httpPort}`)
-            self.$router.push("/login");
-          }
-        } catch (error) {
-          console.log(error)
-        }
+        console.log("workerProcess.stdout.on data:" + data)
+        self.initMemoryCache();
       })
       // 打印错误的后台可执行程序输出
       workerProcess.stderr.on('data', function (data) {

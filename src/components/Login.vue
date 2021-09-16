@@ -44,8 +44,9 @@
           <el-form-item style="width: 100%">
             <el-button type="primary"
               style="width: 100%"
+              :loading="loading"
               class="loginButton"
-              @click="handleSubmit">登录</el-button>
+              @click="handleSubmit">{{sureButtonText}}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -67,11 +68,17 @@
 
 <script>
 import { CircleClose } from "@element-plus/icons";
-import { login, findDeviceUserInfo, native_QueryDevice, client_secret } from '../utils/http'
+import { login, findDeviceUserInfo, sendBindCashiercyc, routers, invokeNative, client_secret } from '../utils/http'
 import { Encrypt, Decrypt } from '../utils/index'
+import { mapState } from 'vuex'
+import { ElMessage } from 'element-plus';
+
+var UUID = require('uuid');
 const desKey = "3rycbnju";
+const sureButtonDefaultText = "登录";
 export default {
   created() {
+    this.sureButtonText = sureButtonDefaultText;
     this.afterViewLoadedInit();
   },
   mounted() {
@@ -90,6 +97,8 @@ export default {
       logoImage: require("./../assets/Images/cl.png"),
       backgroundImage: require("./../assets/Images/loginbg.png"),
       leftBackgroundImage: require("./../assets/Images/loginFormLeft.png"),
+      sureButtonText: '',
+      loading: false,
       loginForm: {
         username: "",
         password: "",
@@ -98,7 +107,11 @@ export default {
       deviceEntity: {
         RememberAccount: false,
         Uid: null,
-        Pwd: null
+        Pwd: null,
+        DeviceId: null,
+        DeviceName: null,
+        StoreId: null,
+        StoreName: null
       },
       loginFormRules: {
         username: [
@@ -122,9 +135,9 @@ export default {
       }
     },
     afterViewLoadedInit() {
-      let params = {};
+      let params = { action: "QueryDevice" };
       //从本地数据库中读取用户名和密码
-      native_QueryDevice(params).then(res => {
+      invokeNative(params).then(res => {
         var data = res.data;
         if (data && data.Uid) {
           this.loginForm.username = Decrypt(data.Uid, desKey);
@@ -148,7 +161,6 @@ export default {
           client_secret: Encrypt(client_secret),
         };
         login(params).then(res => {
-
           this.deviceEntity.RememberAccount = this.loginForm.rememberme;
           if (this.loginForm.rememberme) {
             this.deviceEntity.Uid = Encrypt(this.loginForm.username, desKey);
@@ -160,7 +172,6 @@ export default {
 
           let token = res.data.token;
           let sureName = res.data.nickName;
-          localStorage.setItem("toToken", token);
           this.$store.commit('memoryCache/setAccessToken', token)
           this.$store.commit('memoryCache/setSureName', sureName)
           resolve();
@@ -181,15 +192,81 @@ export default {
         });
       });
     },
+    //激活任务
+    sendBindCashiercyc() {
+      let self = this;
+      return new Promise(resolve => {
+        if (!this.deviceId) {
+          this.sureButtonText = "请前往后台激活...";
+          let params = {
+            storeid: this.storeId,
+            randomOnlyNum: UUID.v1()
+          };
+          var loopActive = setInterval(function () {
+            sendBindCashiercyc(params).then(res => {
+              if (res && res.data && res.data.info) {
+                clearInterval(loopActive);
+
+                var device = res.data.info;
+                self.$store.commit('memoryCache/setDeviceId', device.id);
+                self.deviceEntity.DeviceId = device.id;
+
+                self.$store.commit('memoryCache/setDeviceName', device.deviceName);
+                self.deviceEntity.DeviceName = device.deviceName;
+
+                self.deviceEntity.StoreId = self.storeId;
+                self.deviceEntity.StoreName = self.storeName;
+
+                resolve();
+              }
+            });
+          }, 5000);
+        } else {
+          resolve();
+        }
+      });
+    },
+    //获取收银台路由
+    routers() {
+      let self = this;
+      return new Promise(() => {
+        let params = {};
+        routers(params).then(res => {
+          this.$store.commit('memoryCache/setRouters', res.data)
+
+          //存储数据到本地
+          params = {
+            "action": "UpdateActiveInfo",
+            "data": JSON.stringify(this.deviceEntity)
+          }
+          invokeNative(params);
+
+          this.loading = false;
+          self.$router.push("/main");
+        });
+      });
+    },
     //登录按钮点击
     handleSubmit() {
       this.$refs.loginForm.validate((valid) => {
         if (!valid) {
           return false;
         }
+        this.loading = true;
         this.login().then(() => {
           return this.findDeviceUserInfo();
-        }).catch(err => { alert(err) });
+        }).then(() => {
+          return this.sendBindCashiercyc();
+        }).then(() => {
+          return this.routers();
+        }).catch(err => {
+          this.loading = false;
+          ElMessage({
+            message: err,
+            type: 'error',
+            center: true
+          })
+        });
       });
     },
     exitApp() {
@@ -199,6 +276,13 @@ export default {
   components: {
     CircleClose
   },
+  computed: {
+    ...mapState({
+      deviceId: state => state.memoryCache.DeviceId,
+      storeId: state => state.memoryCache.StoreId,
+      storeName: state => state.memoryCache.StoreName,
+    }),
+  }
 };
 </script>
 
@@ -260,7 +344,7 @@ export default {
 .loginForm .loginButton {
   background: linear-gradient(90deg, #ffd594 2%, #fbe9c2);
   border-radius: 26px;
-  font-size: 19px;
+  font-size: 16px;
   font-family: PingFangSC, PingFangSC-Medium;
   font-weight: 500;
   text-align: center;

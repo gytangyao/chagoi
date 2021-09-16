@@ -3,6 +3,7 @@ import Main from '../components/Main.vue'
 import Setting from '../components/Setting.vue'
 import Login from '../components/Login.vue'
 import SplashScreen from '../components/SplashScreen.vue'
+import store from '../store'
 
 const routes = [
   {
@@ -34,7 +35,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   console.log("to:" + to.path)
   console.log("from:" + from.path)
-  var token = sessionStorage.getItem("token");
+  let token = store.getters['memoryCache/accessToken'];
   if (token || to.path === "/login" || to.path === "/") {
     next();
   } else {

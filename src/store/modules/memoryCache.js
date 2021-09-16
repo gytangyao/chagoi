@@ -25,6 +25,15 @@ const state = () => ({
 })
 
 
+// getters
+const getters = {
+  accessToken: state => {
+    return state.AccessToken
+  }
+}
+
+
+
 // mutations
 const mutations = {
   setAccessToken(state, accessToken) {
@@ -45,10 +54,29 @@ const mutations = {
   setUserName(state, userName) {
     state.UserName = userName
   },
+  setDeviceId(state, deviceId) {
+    state.DeviceId = deviceId
+  },
+  setDeviceName(state, deviceName) {
+    state.DeviceName = deviceName
+  },
+  setGatewayHost(state, gatewayHost) {
+    state.GatewayHost = gatewayHost
+  },
+  setWebsocketUri(state, websocketUri) {
+    state.WebsocketUri = websocketUri
+  },
+  setPushSwitch(state, pushSwitch) {
+    state.PushSwitch = pushSwitch
+  },
+  setRouters(state, routers) {
+    state.Routers = routers
+  },
 }
 
 export default {
   namespaced: true,
   state,
-  mutations
+  mutations,
+  getters
 }

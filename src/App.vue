@@ -7,7 +7,7 @@
 
 export default {
   mounted() {
-    this.init();
+    //  this.init();
   },
   data() {
     return {

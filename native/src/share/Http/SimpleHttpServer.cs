@@ -31,10 +31,6 @@ namespace share.Http
                     _listener.Prefixes.Add(prefix);
                     _listener.Start();
                     _isStarted = true;
-
-                    //Console.WriteLine($"SimpleHttpServer初始化完成:{prefix}");
-                    //Console.Clear();
-                    Console.WriteLine("{\"httpPort\":7777}");
                 }
                 catch (HttpListenerException)
                 {

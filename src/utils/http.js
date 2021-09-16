@@ -1,33 +1,18 @@
 import axios from 'axios'
 import { ElMessage, ElLoading } from 'element-plus';
 import router from './router'
+import store from '../store'
 
-
-let nativeBaseUrl = 'http://127.0.0.1:7777/';
-
+var qs = require('qs');
 let baseUrl = 'https://api-saas.wemew.cn/';
 let client_secret = 'windows@2020';
-//同时发送多次请求处理
+
 let needLoadingRequestCount = 0
 axios.defaults.baseURL = baseUrl;
-
-
-if (process.env.NODE_ENV === 'production') {
-  baseUrl = 'https://api-saas.wemew.com/'
-  client_secret = 'chagoi@2020';
-}
-if (process.env.NODE_ENV === 'test') {
-  baseUrl = 'https://api-saas.wemew.cn/'
-}
-if (process.env.NODE_ENV === 'release') {
-  baseUrl = 'https://test-api-saas.wemew.cn/'
-  client_secret = 'chagoi@2020';
-}
 
 export {
   client_secret
 }
-
 
 
 function tryShowFullScreenLoading() {
@@ -38,12 +23,16 @@ function tryShowFullScreenLoading() {
 }
 
 function tryHideFullScreenLoading() {
-  if (needLoadingRequestCount <= 0) return
+  if (needLoadingRequestCount <= 0) {
+    return
+  }
   needLoadingRequestCount--
   if (needLoadingRequestCount === 0) {
-    endLoading()
+    loading.close()
   }
 }
+
+
 //loading初始化与关闭
 let loading = ''
 function startLoading() {
@@ -55,15 +44,13 @@ function startLoading() {
   })
 }
 
-function endLoading() {
-  loading.close()
-}
 
 
 // axios请求拦截器
 axios.interceptors.request.use((config) => {
-  if (localStorage.getItem("toToken")) {
-    config.headers.Authorization = 'Bearer ' + localStorage.getItem("toToken");
+  let token = store.getters['memoryCache/accessToken'];
+  if (token) {
+    config.headers.Authorization = 'Bearer ' + token;
   }
   if (!config.hidLoading) {
     tryShowFullScreenLoading()
@@ -87,7 +74,6 @@ axios.interceptors.response.use(function (response) {
     return Promise.reject(response.data.message || response.data.msg);
   }
 }, function (err) {
-  console.log(err, '**********************err********************')
   tryHideFullScreenLoading()
   if (err) {
     if (err.response) {
@@ -207,39 +193,60 @@ axios.interceptors.response.use(function (response) {
 });
 
 
-//post QueryString
-function apiByPostQueryString(url, data, hidLoading) {
-  let params = new URLSearchParams()
-  Object.keys(data).forEach(key => {
-    params.append(key, data[key])
-  })
-  let config = {
+//postUrlEncoded
+function postUrlEncoded(url, data, hidLoading) {
+  var config = {
+    method: 'post',
     headers: {
-      'Authorization': 'Bearer ' + localStorage.getItem("toToken")
+      'Content-Type': 'application/x-www-form-urlencoded'
     },
     hidLoading: hidLoading
   };
-  return axios.post(url, params, config)
+  return axios.post(url, qs.stringify(data), config)
 }
+
+
+
+//postRaw
+function postRaw(url, data, hidLoading) {
+  var config = {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    },
+    hidLoading: hidLoading
+  };
+  return axios.post(url, data, config)
+}
+
 
 
 //登录
 export function login(data) {
-  return apiByPostQueryString("/chagoi-auth-service/oauth/token", data)
+  return postUrlEncoded("/chagoi-auth-service/oauth/token", data)
 }
 
 
 export function findDeviceUserInfo(data) {
-  return apiByPostQueryString("/chagoi-bar-order/v1/device/findDeviceUserInfo", data)
+  return postUrlEncoded("/chagoi-bar-order/v1/device/findDeviceUserInfo", data)
 }
 
 export function sendBindCashiercyc(data) {
-  return apiByPostQueryString("/chagoi-bar-order/v1/device/sendBindCashiercyc", data)
+  let url = "/chagoi-bar-order/v1/device/sendBindCashiercyc";
+  return postRaw(url, JSON.stringify(data))
+}
+
+export function routers(data) {
+  return postUrlEncoded("/chagoi-authority-service/menu/cashier/routers", data)
 }
 
 
-
-
-export function native_QueryDevice(data) {
-  return apiByPostQueryString(`${nativeBaseUrl}?action=QueryDevice`, data)
+/**
+ *  调用navtive库函数
+ * @param {*} data 
+ * @returns 
+ */
+export function invokeNative(data) {
+  let url = "http://127.0.0.1:7777";
+  return postRaw(url, JSON.stringify(data))
 }

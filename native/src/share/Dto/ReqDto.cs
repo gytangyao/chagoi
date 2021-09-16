@@ -3,17 +3,14 @@
 namespace share.Dto
 {
     /// <summary>
-    ///     响应数据
+    ///     请求数据
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public class ResDto<T>
+    public class ReqDto
     {
-        public int responseCode { get; set; }
+        public string action { get; set; }
 
-        public T data { get; set; }
-
-
-        public string message { get; set; }
+        public string data { get; set; }
     }
 }
