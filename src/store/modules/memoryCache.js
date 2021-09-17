@@ -29,7 +29,19 @@ const state = () => ({
 const getters = {
   accessToken: state => {
     return state.AccessToken
-  }
+  },
+  storeId: state => {
+    return state.StoreId
+  },
+  userId: state => {
+    return state.UserId
+  },
+  sureName: state => {
+    return state.SureName
+  },
+  deviceId: state => {
+    return state.DeviceId
+  },
 }
 
 
@@ -71,6 +83,12 @@ const mutations = {
   },
   setRouters(state, routers) {
     state.Routers = routers
+  },  
+  setMealConfig(state, mealConfig) {
+    state.MealConfig = mealConfig
+  },
+  setUnitFindUnCompleteResDto(state, unitFindUnCompleteResDto) {
+    state.UnitFindUnCompleteResDto = unitFindUnCompleteResDto
   },
 }
 

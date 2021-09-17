@@ -193,6 +193,24 @@ axios.interceptors.response.use(function (response) {
 });
 
 
+function addPublicData(data){
+  if(data){
+    let userId = store.getters['memoryCache/userId'];
+    let sureName = store.getters['memoryCache/sureName'];
+    let storeId = store.getters['memoryCache/storeId'];
+    let deviceId=store.getters['memoryCache/deviceId'];
+  
+    data.apiVersion="v1";
+    data.userid=userId;
+    data.sureName=sureName;
+    data.storeid=storeId;
+    data.storeId=storeId;
+    data.deviceId=deviceId;
+    data.socketId=deviceId;
+  }
+  return data;
+}
+
 //postUrlEncoded
 function postUrlEncoded(url, data, hidLoading) {
   var config = {
@@ -200,8 +218,9 @@ function postUrlEncoded(url, data, hidLoading) {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
-    hidLoading: hidLoading
+     hidLoading: hidLoading
   };
+  data=addPublicData(data);
   return axios.post(url, qs.stringify(data), config)
 }
 
@@ -216,6 +235,7 @@ function postRaw(url, data, hidLoading) {
     },
     hidLoading: hidLoading
   };
+  data=addPublicData(data);
   return axios.post(url, data, config)
 }
 
@@ -223,22 +243,35 @@ function postRaw(url, data, hidLoading) {
 
 //登录
 export function login(data) {
-  return postUrlEncoded("/chagoi-auth-service/oauth/token", data)
+  let url = "/chagoi-auth-service/oauth/token";
+  return postUrlEncoded(url, data)
 }
 
 
 export function findDeviceUserInfo(data) {
-  return postUrlEncoded("/chagoi-bar-order/v1/device/findDeviceUserInfo", data)
+  let url = "/chagoi-bar-order/v1/device/findDeviceUserInfo";
+  return postUrlEncoded(url, data)
 }
 
 export function sendBindCashiercyc(data) {
   let url = "/chagoi-bar-order/v1/device/sendBindCashiercyc";
-  return postRaw(url, JSON.stringify(data))
+  return postRaw(url, data)
+}
+
+export function findMealConfig(data) {
+  let url = "/chagoi-bar-order/v1/store/findMealConfig";
+  return postRaw(url, data)
+}
+
+export function findUnComplete(data) {
+  return postRaw("/chagoi-bar-order/v1/unit/findUnComplete", data)
 }
 
 export function routers(data) {
   return postUrlEncoded("/chagoi-authority-service/menu/cashier/routers", data)
 }
+
+
 
 
 /**
@@ -248,5 +281,5 @@ export function routers(data) {
  */
 export function invokeNative(data) {
   let url = "http://127.0.0.1:7777";
-  return postRaw(url, JSON.stringify(data))
+  return postRaw(url,data)
 }

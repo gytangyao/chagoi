@@ -13,9 +13,25 @@
           <span class="title">{{ item.menuName }}</span>
         </div>
       </div>
-      <div class="setting"></div>
+      <div class="setting">
+        <div class="item">
+          <span class="label">推送:</span>
+          <span :class="iotClass">正常</span>
+        </div>
+        <div class="item">
+          <span class="label">同步:</span>
+          <span :class="iotClass">正常</span>
+        </div>
+        <el-button type="info">刷新</el-button>
+
+        <div class="item">
+          <span class="label">V1.1323</span>
+        </div>
+      </div>
     </div>
-    <div class="right">right</div>
+    <div class="right">
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
@@ -113,7 +129,7 @@ export default {
       });
     }
 
-    var cs_print = routers.find(m => m.perms === "cs_bill");
+    var cs_print = routers.find(m => m.perms === "cs_print");
     if (cs_print) {
       this.menuItems.push({
         isSelected: false,
@@ -124,6 +140,9 @@ export default {
       });
     }
   },
+  mounted() {
+    this.$router.push("/refreshPage");
+  },
   data() {
     const item = {
       date: "2016-05-02",
@@ -133,7 +152,8 @@ export default {
     return {
       logo: require("./../assets/Images/cl.png"),
       tableData: Array(20).fill(item),
-      menuItems: []
+      menuItems: [],
+      iotClass: "iotClass"
     };
   },
   computed: {
@@ -216,11 +236,45 @@ export default {
 
 .root .left .setting {
   flex: 0 0 50px;
-  background-color: yellow;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.root .left .setting .item {
+  display: flex;
+  justify-content: center;
+  margin: 5px auto 5px auto;
+}
+
+.root .left .setting .item .label {
+  font-size: 14px;
+  font-family: PingFangSC, PingFangSC-Regular;
+  font-weight: 400;
+  text-align: left;
+  color: #828282;
+  line-height: 20px;
+}
+
+.root .left .setting .el-button--info {
+  height: 24px;
+  background: #3a3d43;
+  border-radius: 14px;
+  border: transparent;
+  font-size: 12px;
+  font-family: PingFangSC, PingFangSC-Regular;
+  font-weight: 400;
+  text-align: left;
+  color: #a9a9a9;
+  min-height: 35px;
 }
 
 .root .right {
   flex: 1 1 0;
   background-color: #2a2e37;
-}</style
->>
+}
+
+.iotClass {
+  color: #40b88f;
+}
+</style>

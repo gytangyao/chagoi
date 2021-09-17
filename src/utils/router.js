@@ -3,6 +3,7 @@ import Main from '../components/Main.vue'
 import Setting from '../components/Setting.vue'
 import Login from '../components/Login.vue'
 import SplashScreen from '../components/SplashScreen.vue'
+import RefreshPage from '../components/RefreshPage.vue'
 import store from '../store'
 
 const routes = [
@@ -19,12 +20,19 @@ const routes = [
   {
     path: "/main",
     name: "main",
-    component: Main
-  },
-  {
-    path: "/setting",
-    name: "setting",
-    component: Setting
+    component: Main,
+    children:[
+      {
+        path: "/setting",
+        name: "setting",
+        component: Setting
+      },
+      {
+        path: "/refreshPage",
+        name: "refreshPage",
+        component: RefreshPage
+      }
+    ]
   }
 ]
 
