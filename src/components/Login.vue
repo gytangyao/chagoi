@@ -73,10 +73,11 @@ import { login, findDeviceUserInfo, sendBindCashiercyc, routers, invokeNative, c
 import { Encrypt, Decrypt } from '../utils/index'
 import { mapState } from 'vuex'
 import { ElMessage } from 'element-plus';
-
 var UUID = require('uuid');
 const desKey = "3rycbnju";
 const sureButtonDefaultText = "登录";
+
+
 export default {
   created() {
     this.sureButtonText = sureButtonDefaultText;
@@ -277,24 +278,18 @@ export default {
       });
     },
     exitApp() {
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+      this.$confirm('要退出软件吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: 'info',
         customClass: "MyMsgBox"
       })
         .then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!',
-          })
-        })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除',
-          })
-        })
+          const ipc = require('electron').ipcRenderer;
+          ipc.send('open-save-chart-dialog');
+        }).catch(err => {
+          console.log(err + "用户取消退出")
+        });
     },
   },
   components: {
