@@ -183,6 +183,9 @@ export default {
           this.$store.commit('memoryCache/setAccessToken', token)
           this.$store.commit('memoryCache/setSureName', sureName)
           resolve();
+        }).catch(err => {
+          console.log(err);
+          this.loading = false;
         });
       });
     },
@@ -197,6 +200,9 @@ export default {
           this.$store.commit('memoryCache/setUserId', data.user.userId)
           this.$store.commit('memoryCache/setUserName', data.user.userName)
           resolve();
+        }).catch(err => {
+          console.log(err);
+          this.loading = false;
         });
       });
     },
@@ -227,6 +233,9 @@ export default {
 
                 resolve();
               }
+            }).catch(err => {
+              console.log(err);
+              this.loading = false;
             });
           }, 5000);
         } else {
@@ -240,7 +249,9 @@ export default {
       return new Promise(() => {
         let params = {};
         routers(params).then(res => {
-          this.$store.commit('memoryCache/setRouters', res.data)
+          let data = res.data;
+          this.$store.commit('memoryCache/setRouters', data)
+
 
           //存储数据到本地
           params = {
@@ -251,6 +262,9 @@ export default {
 
           this.loading = false;
           self.$router.push("/main");
+        }).catch(err => {
+          console.log(err);
+          this.loading = false;
         });
       });
     },
