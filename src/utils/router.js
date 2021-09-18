@@ -1,21 +1,17 @@
 import { createRouter, createWebHashHistory } from "vue-router"
 import Main from '../components/Main.vue'
-import Setting from '../components/Setting.vue'
-import Login from '../components/Login.vue'
-import SplashScreen from '../components/SplashScreen.vue'
-import RefreshPage from '../components/RefreshPage.vue'
 import store from '../store'
 
 const routes = [
   {
     path: "/",
     name: "splashScreen",
-    component: SplashScreen
+    component: ()=>import('../components/SplashScreen.vue')
   },
   {
     path: "/login",
     name: "login",
-    component: Login
+    component: ()=>import('../components/Login.vue')
   },
   {
     path: "/main",
@@ -25,12 +21,12 @@ const routes = [
       {
         path: "/setting",
         name: "setting",
-        component: Setting
+        component: ()=>import('../components/Setting.vue')
       },
       {
         path: "/refreshPage",
         name: "refreshPage",
-        component: RefreshPage
+        component:()=>import('../components/RefreshPage.vue')
       }
     ]
   }

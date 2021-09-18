@@ -1,62 +1,73 @@
 <template>
-  <div class="root-container"
+  <div
+    class="root-container"
     v-bind:style="{
       backgroundImage: 'url(' + backgroundImage + ')',
       backgroundRepeat: 'no-repeat',
-      backgroundSize: '100% 100%',
-    }">
+      backgroundSize: '100% 100%'
+    }"
+  >
     <div class="login-container">
-      <div class="left"
+      <div
+        class="left"
         v-bind:style="{
           backgroundImage: 'url(' + leftBackgroundImage + ')',
           backgroundRepeat: 'no-repeat',
-          backgroundSize: '100% 100%',
-        }"></div>
+          backgroundSize: '100% 100%'
+        }"
+      ></div>
       <div class="right">
-        <el-form :model="loginForm"
+        <el-form
+          :model="loginForm"
           :rules="loginFormRules"
           status-icon
           ref="loginForm"
           label-position="left"
           label-width="0px"
-          class="loginForm">
-          <img class="logo"
-            :src="logoImage" />
+          class="loginForm"
+        >
+          <img class="logo" :src="logoImage" />
           <span class="title">微喵虎斑管理系统</span>
           <el-form-item prop="username">
-            <el-input type="text"
+            <el-input
+              type="text"
               ref="username"
               v-model="loginForm.username"
               auto-complete="off"
               prefix-icon="el-icon-user"
-              placeholder="用户名"></el-input>
+              placeholder="用户名"
+            ></el-input>
           </el-form-item>
           <el-form-item prop="password">
-            <el-input type="password"
+            <el-input
+              type="password"
               ref="password"
+              show-password
               prefix-icon="el-icon-lock"
               v-model="loginForm.password"
               auto-complete="off"
-              placeholder="密码"></el-input>
+              placeholder="密码"
+            ></el-input>
           </el-form-item>
-          <el-checkbox v-model="loginForm.rememberme"
-            class="rememberme">记住登录凭证 </el-checkbox>
+          <el-checkbox v-model="loginForm.rememberme" class="rememberme"
+            >记住登录凭证
+          </el-checkbox>
           <el-form-item style="width: 100%">
-            <el-button type="primary"
+            <el-button
+              type="primary"
               style="width: 100%"
               :loading="loading"
               class="loginButton"
-              @click="handleSubmit">{{sureButtonText}}</el-button>
+              @click="handleSubmit"
+              >{{ sureButtonText }}</el-button
+            >
           </el-form-item>
         </el-form>
       </div>
     </div>
 
     <div class="toolbox">
-      <el-button round
-        class="closeButton"
-        size="medium"
-        @click="exitApp()">
+      <el-button round class="closeButton" size="medium" @click="exitApp()">
         <el-icon style="vertical-align: middle">
           <circle-close />
         </el-icon>
@@ -64,19 +75,24 @@
       </el-button>
     </div>
   </div>
-
 </template>
 
 <script>
 import { CircleClose } from "@element-plus/icons";
-import { login, findDeviceUserInfo, sendBindCashiercyc, routers, invokeNative, client_secret } from '../utils/http'
-import { Encrypt, Decrypt } from '../utils/index'
-import { mapState } from 'vuex'
-import { ElMessage } from 'element-plus';
-var UUID = require('uuid');
+import {
+  login,
+  findDeviceUserInfo,
+  sendBindCashiercyc,
+  routers,
+  invokeNative,
+  client_secret
+} from "../utils/http";
+import { Encrypt, Decrypt } from "../utils/index";
+import { mapState } from "vuex";
+import { ElMessage } from "element-plus";
+var UUID = require("uuid");
 const desKey = "3rycbnju";
 const sureButtonDefaultText = "登录";
-
 
 export default {
   created() {
@@ -89,17 +105,17 @@ export default {
     } else if (this.loginForm.password === "") {
       this.$refs.password.focus();
     }
-    window.addEventListener('keydown', (this.keyDown));
+    window.addEventListener("keydown", this.keyDown);
   },
   unmounted() {
-    window.removeEventListener('keydown', this.keyDown, false);
+    window.removeEventListener("keydown", this.keyDown, false);
   },
   data() {
     return {
       logoImage: require("./../assets/Images/cl.png"),
       backgroundImage: require("./../assets/Images/loginbg.png"),
       leftBackgroundImage: require("./../assets/Images/loginFormLeft.png"),
-      sureButtonText: '',
+      sureButtonText: "",
       loading: false,
       loginForm: {
         username: "",
@@ -120,14 +136,12 @@ export default {
           {
             required: true,
             message: "请输入登录用户名",
-            trigger: "blur",
-          },
+            trigger: "blur"
+          }
         ],
-        password: [
-          { required: true, message: "请输入密码", trigger: "blur" },
-        ],
+        password: [{ required: true, message: "请输入密码", trigger: "blur" }]
       },
-      checked: false,
+      checked: false
     };
   },
   methods: {
@@ -166,44 +180,51 @@ export default {
           username: this.loginForm.username,
           password: Encrypt(this.loginForm.password),
           client_id: "windons",
-          client_secret: Encrypt(client_secret),
+          client_secret: Encrypt(client_secret)
         };
-        login(params).then(res => {
-          this.deviceEntity.RememberAccount = this.loginForm.rememberme;
-          if (this.loginForm.rememberme) {
-            this.deviceEntity.Uid = Encrypt(this.loginForm.username, desKey);
-            this.deviceEntity.Pwd = Encrypt(this.loginForm.password, desKey);
-          } else {
-            this.deviceEntity.Uid = null;
-            this.deviceEntity.Pwd = null;
-          }
+        login(params)
+          .then(res => {
+            this.deviceEntity.RememberAccount = this.loginForm.rememberme;
+            if (this.loginForm.rememberme) {
+              this.deviceEntity.Uid = Encrypt(this.loginForm.username, desKey);
+              this.deviceEntity.Pwd = Encrypt(this.loginForm.password, desKey);
+            } else {
+              this.deviceEntity.Uid = null;
+              this.deviceEntity.Pwd = null;
+            }
 
-          let token = res.data.token;
-          let sureName = res.data.nickName;
-          this.$store.commit('memoryCache/setAccessToken', token)
-          this.$store.commit('memoryCache/setSureName', sureName)
-          resolve();
-        }).catch(err => {
-          console.log(err);
-          this.loading = false;
-        });
+            let token = res.data.token;
+            let sureName = res.data.nickName;
+            this.$store.commit("memoryCache/setAccessToken", token);
+            this.$store.commit("memoryCache/setSureName", sureName);
+            resolve();
+          })
+          .catch(err => {
+            console.log(err);
+            this.loading = false;
+          });
       });
     },
     //查找设备,门店信息
     findDeviceUserInfo() {
       return new Promise(resolve => {
         let params = {};
-        findDeviceUserInfo(params).then(res => {
-          let data = res.data;
-          this.$store.commit('memoryCache/setStoreId', data.storeBean.id)
-          this.$store.commit('memoryCache/setStoreName', data.storeBean.storeName)
-          this.$store.commit('memoryCache/setUserId', data.user.userId)
-          this.$store.commit('memoryCache/setUserName', data.user.userName)
-          resolve();
-        }).catch(err => {
-          console.log(err);
-          this.loading = false;
-        });
+        findDeviceUserInfo(params)
+          .then(res => {
+            let data = res.data;
+            this.$store.commit("memoryCache/setStoreId", data.storeBean.id);
+            this.$store.commit(
+              "memoryCache/setStoreName",
+              data.storeBean.storeName
+            );
+            this.$store.commit("memoryCache/setUserId", data.user.userId);
+            this.$store.commit("memoryCache/setUserName", data.user.userName);
+            resolve();
+          })
+          .catch(err => {
+            console.log(err);
+            this.loading = false;
+          });
       });
     },
     //激活任务
@@ -216,27 +237,32 @@ export default {
             storeid: this.storeId,
             randomOnlyNum: UUID.v1()
           };
-          var loopActive = setInterval(function () {
-            sendBindCashiercyc(params).then(res => {
-              if (res && res.data && res.data.info) {
-                clearInterval(loopActive);
+          var loopActive = setInterval(function() {
+            sendBindCashiercyc(params)
+              .then(res => {
+                if (res && res.data && res.data.info) {
+                  clearInterval(loopActive);
 
-                var device = res.data.info;
-                self.$store.commit('memoryCache/setDeviceId', device.id);
-                self.deviceEntity.DeviceId = device.id;
+                  var device = res.data.info;
+                  self.$store.commit("memoryCache/setDeviceId", device.id);
+                  self.deviceEntity.DeviceId = device.id;
 
-                self.$store.commit('memoryCache/setDeviceName', device.deviceName);
-                self.deviceEntity.DeviceName = device.deviceName;
+                  self.$store.commit(
+                    "memoryCache/setDeviceName",
+                    device.deviceName
+                  );
+                  self.deviceEntity.DeviceName = device.deviceName;
 
-                self.deviceEntity.StoreId = self.storeId;
-                self.deviceEntity.StoreName = self.storeName;
+                  self.deviceEntity.StoreId = self.storeId;
+                  self.deviceEntity.StoreName = self.storeName;
 
-                resolve();
-              }
-            }).catch(err => {
-              console.log(err);
-              this.loading = false;
-            });
+                  resolve();
+                }
+              })
+              .catch(err => {
+                console.log(err);
+                this.loading = false;
+              });
           }, 5000);
         } else {
           resolve();
@@ -248,63 +274,69 @@ export default {
       let self = this;
       return new Promise(() => {
         let params = {};
-        routers(params).then(res => {
-          let data = res.data;
-          this.$store.commit('memoryCache/setRouters', data)
+        routers(params)
+          .then(res => {
+            let data = res.data;
+            this.$store.commit("memoryCache/setRouters", data);
 
+            //存储数据到本地
+            params = {
+              action: "UpdateActiveInfo",
+              data: JSON.stringify(this.deviceEntity)
+            };
+            invokeNative(params);
 
-          //存储数据到本地
-          params = {
-            "action": "UpdateActiveInfo",
-            "data": JSON.stringify(this.deviceEntity)
-          }
-          invokeNative(params);
-
-          this.loading = false;
-          self.$router.push("/main");
-        }).catch(err => {
-          console.log(err);
-          this.loading = false;
-        });
+            this.loading = false;
+            self.$router.push("/main");
+          })
+          .catch(err => {
+            console.log(err);
+            this.loading = false;
+          });
       });
     },
     //登录按钮点击
     handleSubmit() {
-      this.$refs.loginForm.validate((valid) => {
+      this.$refs.loginForm.validate(valid => {
         if (!valid) {
           return false;
         }
         this.loading = true;
-        this.login().then(() => {
-          return this.findDeviceUserInfo();
-        }).then(() => {
-          return this.sendBindCashiercyc();
-        }).then(() => {
-          return this.routers();
-        }).catch(err => {
-          this.loading = false;
-          ElMessage({
-            message: err,
-            type: 'error',
-            center: true
+        this.login()
+          .then(() => {
+            return this.findDeviceUserInfo();
           })
-        });
+          .then(() => {
+            return this.sendBindCashiercyc();
+          })
+          .then(() => {
+            return this.routers();
+          })
+          .catch(err => {
+            this.loading = false;
+            ElMessage({
+              message: err,
+              type: "error",
+              center: true
+            });
+          });
       });
     },
     exitApp() {
-      this.$confirm('要退出软件吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'info',
+      this.$confirm("要退出软件吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "info",
         customClass: "MyMsgBox"
       })
         .then(() => {
-          const ipc = require('electron').ipcRenderer;
-          ipc.send('open-save-chart-dialog');
-        }).catch(err => {
-          console.log(err + "用户取消退出")
+          const ipc = require("electron").ipcRenderer;
+          ipc.send("open-save-chart-dialog");
+        })
+        .catch(err => {
+          console.log(err + "用户取消退出");
         });
-    },
+    }
   },
   components: {
     CircleClose
@@ -313,8 +345,8 @@ export default {
     ...mapState({
       deviceId: state => state.memoryCache.DeviceId,
       storeId: state => state.memoryCache.StoreId,
-      storeName: state => state.memoryCache.StoreName,
-    }),
+      storeName: state => state.memoryCache.StoreName
+    })
   }
 };
 </script>

@@ -16,14 +16,11 @@ export default {
       percentage: 0
     };
   },
-  mounted() {
-    this.findMealConfig()
-      .then(() => {
-        return this.getRouters();
-      })
-      .then(() => {
-        return this.findUnComplete();
-      });
+  created() {
+    this.$eventBus.on("requestRefresh", () => {
+      this.beginRefresh();
+    });
+    this.beginRefresh();
   },
   computed: {
     ...mapState({
@@ -32,11 +29,20 @@ export default {
     })
   },
   methods: {
+    beginRefresh() {
+      this.findMealConfig()
+        .then(() => {
+          return this.getRouters();
+        })
+        .then(() => {
+          return this.findUnComplete();
+        });
+    },
     findMealConfig() {
       this.loadingText = "正在更新数据隐私控制项";
       return new Promise(resolve => {
         let params = { storeid: this.storeId };
-        findMealConfig(params).then(res => {
+        findMealConfig(params, true).then(res => {
           this.$store.commit("memoryCache/setMealConfig", res.data);
           this.percentage = parseInt((1 / totalPercentage) * 100);
           resolve();
@@ -47,7 +53,7 @@ export default {
       this.loadingText = "正在更新权限数据";
       return new Promise(resolve => {
         let params = {};
-        routers(params).then(res => {
+        routers(params, true).then(res => {
           let data = res.data;
           this.$store.commit("memoryCache/setRouters", data);
           this.percentage = parseInt((2 / totalPercentage) * 100);
@@ -63,7 +69,7 @@ export default {
         );
         if (cs_wine_cooler) {
           let params = {};
-          findUnComplete(params).then(res => {
+          findUnComplete(params, true).then(res => {
             let data = res.data;
             this.$store.commit("memoryCache/setUnitFindUnCompleteResDto", data);
             this.percentage = parseInt((3 / totalPercentage) * 100);

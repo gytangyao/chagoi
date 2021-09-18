@@ -242,33 +242,33 @@ function postRaw(url, data, hidLoading) {
 
 
 //登录
-export function login(data) {
+export function login(data,hidLoading=false) {
   let url = "/chagoi-auth-service/oauth/token";
-  return postUrlEncoded(url, data)
+  return postUrlEncoded(url, data,hidLoading)
 }
 
 
-export function findDeviceUserInfo(data) {
+export function findDeviceUserInfo(data,hidLoading=false) {
   let url = "/chagoi-bar-order/v1/device/findDeviceUserInfo";
-  return postUrlEncoded(url, data)
+  return postUrlEncoded(url, data,hidLoading)
 }
 
-export function sendBindCashiercyc(data) {
+export function sendBindCashiercyc(data,hidLoading=false) {
   let url = "/chagoi-bar-order/v1/device/sendBindCashiercyc";
-  return postRaw(url, data)
+  return postRaw(url, data,hidLoading)
 }
 
-export function findMealConfig(data) {
+export function findMealConfig(data,hidLoading=false) {
   let url = "/chagoi-bar-order/v1/store/findMealConfig";
-  return postRaw(url, data)
+  return postRaw(url, data,hidLoading)
 }
 
-export function findUnComplete(data) {
-  return postRaw("/chagoi-bar-order/v1/unit/findUnComplete", data)
+export function findUnComplete(data,hidLoading=false) {
+  return postRaw("/chagoi-bar-order/v1/unit/findUnComplete", data,hidLoading)
 }
 
-export function routers(data) {
-  return postUrlEncoded("/chagoi-authority-service/menu/cashier/routers", data)
+export function routers(data,hidLoading=false) {
+  return postUrlEncoded("/chagoi-authority-service/menu/cashier/routers", data,hidLoading)
 }
 
 
@@ -279,7 +279,7 @@ export function routers(data) {
  * @param {*} data 
  * @returns 
  */
-export function invokeNative(data) {
+export function invokeNative(data,hidLoading=false) {
   let url = "http://127.0.0.1:7777";
-  return postRaw(url,data)
+  return postRaw(url,data,hidLoading)
 }

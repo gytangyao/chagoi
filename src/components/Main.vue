@@ -22,15 +22,14 @@
           <span class="label">同步:</span>
           <span :class="iotClass">正常</span>
         </div>
-        <el-button type="info">刷新</el-button>
-
+        <el-button @click="refreshMemoryCache" type="info">刷新</el-button>
         <div class="item">
           <span class="label">V1.1323</span>
         </div>
       </div>
     </div>
     <div class="right">
-      <router-view></router-view>
+      <router-view ref="main_router_view"></router-view>
     </div>
   </div>
 </template>
@@ -38,130 +37,31 @@
 <script>
 import { mapState } from "vuex";
 export default {
-  created() {
-    let routers = this.routers;
-
-    var cs_meal = routers.find(m => m.perms === "cs_meal");
-    if (cs_meal) {
-      this.menuItems.push({
-        isSelected: true,
-        class: "menuItems menuItemsActive",
-        perms: cs_meal.perms,
-        menuName: cs_meal.menuName,
-        icon: require("./../assets/Images/MenuIcon/order.png")
-      });
-    }
-
-    var cs_wine_cooler = routers.find(m => m.perms === "cs_wine_cooler");
-    if (cs_wine_cooler) {
-      this.menuItems.push({
-        isSelected: false,
-        class: "menuItems",
-        perms: cs_wine_cooler.perms,
-        menuName: cs_wine_cooler.menuName,
-        icon: require("./../assets/Images/MenuIcon/wine.png")
-      });
-    }
-
-    var cs_member = routers.find(m => m.perms === "cs_member");
-    if (cs_member) {
-      this.menuItems.push({
-        isSelected: false,
-        class: "menuItems",
-        perms: cs_member.perms,
-        menuName: cs_member.menuName,
-        icon: require("./../assets/Images/MenuIcon/member.png")
-      });
-    }
-
-    var cs_order_line = routers.find(m => m.perms === "cs_order_line");
-    if (cs_order_line) {
-      this.menuItems.push({
-        isSelected: false,
-        class: "menuItems",
-        perms: cs_order_line.perms,
-        menuName: cs_order_line.menuName,
-        icon: require("./../assets/Images/MenuIcon/queue.png")
-      });
-    }
-
-    var cs_preordain = routers.find(m => m.perms === "cs_preordain");
-    if (cs_preordain) {
-      this.menuItems.push({
-        isSelected: false,
-        class: "menuItems",
-        perms: cs_preordain.perms,
-        menuName: cs_preordain.menuName,
-        icon: require("./../assets/Images/MenuIcon/reserve.png")
-      });
-    }
-
-    var cs_commodity = routers.find(m => m.perms === "cs_commodity");
-    if (cs_commodity) {
-      this.menuItems.push({
-        isSelected: false,
-        class: "menuItems",
-        perms: cs_commodity.perms,
-        menuName: cs_commodity.menuName,
-        icon: require("./../assets/Images/MenuIcon/goods.png")
-      });
-    }
-
-    var cs_bill = routers.find(m => m.perms === "cs_bill");
-    if (cs_bill) {
-      this.menuItems.push({
-        isSelected: false,
-        class: "menuItems",
-        perms: cs_bill.perms,
-        menuName: cs_bill.menuName,
-        icon: require("./../assets/Images/MenuIcon/bill.png")
-      });
-    }
-
-    var cs_tp = routers.find(m => m.perms === "cs_tp");
-    if (cs_tp) {
-      this.menuItems.push({
-        isSelected: false,
-        class: "menuItems",
-        perms: cs_tp.perms,
-        menuName: cs_tp.menuName,
-        icon: require("./../assets/Images/MenuIcon/shift.png")
-      });
-    }
-
-    var cs_print = routers.find(m => m.perms === "cs_print");
-    if (cs_print) {
-      this.menuItems.push({
-        isSelected: false,
-        class: "menuItems",
-        perms: cs_print.perms,
-        menuName: cs_print.menuName,
-        icon: require("./../assets/Images/MenuIcon/print.png")
-      });
-    }
-  },
   mounted() {
+    this.fillMenu();
     this.$router.push("/refreshPage");
   },
   data() {
-    const item = {
-      date: "2016-05-02",
-      name: "王小虎",
-      address: "上海市普陀区金沙江路 1518 弄"
-    };
     return {
       logo: require("./../assets/Images/cl.png"),
-      tableData: Array(20).fill(item),
       menuItems: [],
-      iotClass: "iotClass"
+      iotClass: "iotClass",
+      requestRefresh: false
     };
   },
   computed: {
+    todoLength1() {
+      return this.menuItems.length;
+    },
     ...mapState({
       routers: state => state.memoryCache.Routers
     })
   },
   methods: {
+    //刷新缓存
+    refreshMemoryCache() {
+      this.$eventBus.emit("requestRefresh");
+    },
     onMenuClick(item) {
       console.log(item);
       this.menuItems.forEach(element => {
@@ -170,6 +70,107 @@ export default {
           ? "menuItems menuItemsActive"
           : "menuItems";
       });
+    },
+    fillMenu() {
+      let routers = this.routers;
+      var cs_meal = routers.find(m => m.perms === "cs_meal");
+      if (cs_meal) {
+        this.menuItems.push({
+          isSelected: true,
+          class: "menuItems menuItemsActive",
+          perms: cs_meal.perms,
+          menuName: cs_meal.menuName,
+          icon: require("./../assets/Images/MenuIcon/order.png")
+        });
+      }
+
+      var cs_wine_cooler = routers.find(m => m.perms === "cs_wine_cooler");
+      if (cs_wine_cooler) {
+        this.menuItems.push({
+          isSelected: false,
+          class: "menuItems",
+          perms: cs_wine_cooler.perms,
+          menuName: cs_wine_cooler.menuName,
+          icon: require("./../assets/Images/MenuIcon/wine.png")
+        });
+      }
+
+      var cs_member = routers.find(m => m.perms === "cs_member");
+      if (cs_member) {
+        this.menuItems.push({
+          isSelected: false,
+          class: "menuItems",
+          perms: cs_member.perms,
+          menuName: cs_member.menuName,
+          icon: require("./../assets/Images/MenuIcon/member.png")
+        });
+      }
+
+      var cs_order_line = routers.find(m => m.perms === "cs_order_line");
+      if (cs_order_line) {
+        this.menuItems.push({
+          isSelected: false,
+          class: "menuItems",
+          perms: cs_order_line.perms,
+          menuName: cs_order_line.menuName,
+          icon: require("./../assets/Images/MenuIcon/queue.png")
+        });
+      }
+
+      var cs_preordain = routers.find(m => m.perms === "cs_preordain");
+      if (cs_preordain) {
+        this.menuItems.push({
+          isSelected: false,
+          class: "menuItems",
+          perms: cs_preordain.perms,
+          menuName: cs_preordain.menuName,
+          icon: require("./../assets/Images/MenuIcon/reserve.png")
+        });
+      }
+
+      var cs_commodity = routers.find(m => m.perms === "cs_commodity");
+      if (cs_commodity) {
+        this.menuItems.push({
+          isSelected: false,
+          class: "menuItems",
+          perms: cs_commodity.perms,
+          menuName: cs_commodity.menuName,
+          icon: require("./../assets/Images/MenuIcon/goods.png")
+        });
+      }
+
+      var cs_bill = routers.find(m => m.perms === "cs_bill");
+      if (cs_bill) {
+        this.menuItems.push({
+          isSelected: false,
+          class: "menuItems",
+          perms: cs_bill.perms,
+          menuName: cs_bill.menuName,
+          icon: require("./../assets/Images/MenuIcon/bill.png")
+        });
+      }
+
+      var cs_tp = routers.find(m => m.perms === "cs_tp");
+      if (cs_tp) {
+        this.menuItems.push({
+          isSelected: false,
+          class: "menuItems",
+          perms: cs_tp.perms,
+          menuName: cs_tp.menuName,
+          icon: require("./../assets/Images/MenuIcon/shift.png")
+        });
+      }
+
+      var cs_print = routers.find(m => m.perms === "cs_print");
+      if (cs_print) {
+        this.menuItems.push({
+          isSelected: false,
+          class: "menuItems",
+          perms: cs_print.perms,
+          menuName: cs_print.menuName,
+          icon: require("./../assets/Images/MenuIcon/print.png")
+        });
+      }
     }
   }
 };
@@ -229,7 +230,6 @@ export default {
   font-family: PingFangSC, PingFangSC-Regular;
   font-weight: 400;
   text-align: left;
-
   line-height: 17px;
   align-self: center;
 }
