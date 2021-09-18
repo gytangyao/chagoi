@@ -63,7 +63,7 @@ axios.interceptors.request.use((config) => {
 // axios响应拦截器
 axios.interceptors.response.use(function (response) {
   tryHideFullScreenLoading()
-  if (response.data.responseCode == 200 || response.config.responseType == 'blob') {
+  if (response.data.responseCode == 200) {
     return response.data;
   } else {
     ElMessage({
@@ -267,9 +267,17 @@ export function findUnComplete(data,hidLoading=false) {
   return postRaw("/chagoi-bar-order/v1/unit/findUnComplete", data,hidLoading)
 }
 
+export function queryUserRoles(data,hidLoading=false) {
+  return postRaw("/chagoi-bar-order/v1/user/queryUserRoles", data,hidLoading)
+}
+
+
+
+
 export function routers(data,hidLoading=false) {
   return postUrlEncoded("/chagoi-authority-service/menu/cashier/routers", data,hidLoading)
 }
+
 
 
 

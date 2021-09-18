@@ -6,8 +6,14 @@
 </template>
 
 <script>
-import { findMealConfig, routers, findUnComplete } from "../utils/http";
+import {
+  findMealConfig,
+  routers,
+  findUnComplete,
+  queryUserRoles
+} from "../utils/http";
 import { mapState } from "vuex";
+var pinyin = require("pinyin");
 const totalPercentage = 9;
 export default {
   data() {
@@ -36,6 +42,9 @@ export default {
         })
         .then(() => {
           return this.findUnComplete();
+        })
+        .then(() => {
+          return this.queryUserRoles();
         });
     },
     findMealConfig() {
@@ -71,7 +80,12 @@ export default {
           let params = {};
           findUnComplete(params, true).then(res => {
             let data = res.data;
-            this.$store.commit("memoryCache/setUnitFindUnCompleteResDto", data);
+            if (data && data.length > 0) {
+              this.$store.commit(
+                "memoryCache/setUnitFindUnCompleteResDto",
+                data[0]
+              );
+            }
             this.percentage = parseInt((3 / totalPercentage) * 100);
             resolve();
           });
@@ -79,6 +93,38 @@ export default {
           this.percentage = parseInt((3 / totalPercentage) * 100);
           resolve();
         }
+      });
+    },
+    queryUserRoles() {
+      this.loadingText = "正在查询客户经理";
+      return new Promise(resolve => {
+        let params = {};
+        queryUserRoles(params, true).then(res => {
+          let data = res.data;
+          if (data && data.length > 0) {
+            data.forEach(element => {
+              let sureName = element.sureName;
+              if (sureName) {
+                var sureNamePinYin = pinyin(sureName, {
+                  style: pinyin.STYLE_FIRST_LETTER
+                }).toString();
+                sureNamePinYin = sureNamePinYin.replace(
+                  new RegExp(",", "g"),
+                  ""
+                );
+                console.log(sureNamePinYin);
+                // sureNamePinYin = sureNamePinYin.replace(
+                //   new RegExp(",", "g"),
+                //   ""
+                // );
+                element.sureName = sureNamePinYin;
+              }
+            });
+          }
+          this.$store.commit("memoryCache/setAccountManagers", data);
+          this.percentage = parseInt((4 / totalPercentage) * 100);
+          resolve();
+        });
       });
     }
   }

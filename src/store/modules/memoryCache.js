@@ -90,6 +90,9 @@ const mutations = {
   setUnitFindUnCompleteResDto(state, unitFindUnCompleteResDto) {
     state.UnitFindUnCompleteResDto = unitFindUnCompleteResDto
   },
+  setAccountManagers(state, accountManagers) {
+    state.AccountManagers = accountManagers
+  },
 }
 
 export default {
