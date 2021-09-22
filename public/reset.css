@@ -94,58 +94,52 @@ table {
   *zoom: 1;
 }
 
-.MyMsgBox{
+.MyMsgBox {
   min-height: 302px;
   min-width: 586px;
-  background: #292d36  !important;
+  background: #292d36 !important;
   border-radius: 10px !important;
-  border: transparent  !important;
-  box-shadow: 17px 11px 34px -17px rgba(0,0,0,0.30)  !important;
+  border: transparent !important;
+  box-shadow: 17px 11px 34px -17px rgba(0, 0, 0, 0.3) !important;
 }
 
-.MyMsgBox .el-message-box__header{
-  border-bottom: 1px solid #3A3E48 !important;
-  height: 30px   !important;
+.MyMsgBox .el-message-box__header {
+  border-bottom: 1px solid #3a3e48 !important;
+  height: 30px !important;
 }
 
-.MyMsgBox .el-message-box__content{
-  border-bottom: 1px solid #3A3E48 !important;
-  height: 170px   !important;
-  color: #FFFFFF  !important;
+.MyMsgBox .el-message-box__content {
+  border-bottom: 1px solid #3a3e48 !important;
+  height: 170px !important;
+  color: #ffffff !important;
   display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-.MyMsgBox .el-message-box__btns{
+.MyMsgBox .el-message-box__btns {
   text-align: center !important;
 }
 
-
-
-.MyMsgBox .el-message-box__btns .el-button{
-width: 124px;
-height: 36px;
-background: #30343D;
-border-radius: 28px;
-border: 1px solid #828282;
-font-size: 14px;
-font-family: PingFangSC, PingFangSC-Regular;
-font-weight: 400;
-text-align: center;
-color: #D6D6D6;
-margin-right: 50px;
-margin-top: 8px;
+.MyMsgBox .el-message-box__btns .el-button {
+  width: 124px;
+  height: 36px;
+  background: #30343d;
+  border-radius: 28px;
+  border: 1px solid #828282;
+  font-size: 14px;
+  font-family: PingFangSC, PingFangSC-Regular;
+  font-weight: 400;
+  text-align: center;
+  color: #d6d6d6;
+  margin-right: 50px;
+  margin-top: 8px;
 }
 
-
-
-.MyMsgBox .el-message-box__btns .el-button--primary{
-background: linear-gradient(90deg,#ffd594 2%, #fbe9c2);
-border: transparent  !important;
-color: #3d170e;
-margin-left: 50px;
-
+.MyMsgBox .el-message-box__btns .el-button--primary {
+  background: linear-gradient(90deg, #ffd594 2%, #fbe9c2);
+  border: transparent !important;
+  color: #3d170e;
+  margin-left: 50px;
 }
-
