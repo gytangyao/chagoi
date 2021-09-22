@@ -1,5 +1,5 @@
 <template>
-  <span>Setting</span>
+  <span>order.index</span>
 </template>
 
 <script>

@@ -1,3 +1,4 @@
+"use strict";
 import native_http from './modules/native_http'
 import memoryCache from './modules/memoryCache'
 import { createStore } from 'vuex'

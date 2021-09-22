@@ -1,3 +1,4 @@
+"use strict";
 // initial state
 const state = () => ({
   loadingText: "",

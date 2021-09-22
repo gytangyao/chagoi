@@ -35,11 +35,24 @@
 </template>
 
 <script>
+"use strict";
 import { mapState } from "vuex";
 export default {
+  created() {
+    this.$eventBus.on("RefreshComplete", () => {
+      //UseRoutersFillMenu
+      if (this.menuItems.length > 0) {
+        let firstMenu = this.menuItems[0];
+        this.onMenuClick(firstMenu);
+      }
+    });
+  },
   mounted() {
     this.fillMenu();
-    this.$router.push("/refreshPage");
+    this.$router.replace({
+      name: "refreshPage",
+      params: { t: new Date().getTime() }
+    });
   },
   data() {
     return {
@@ -50,20 +63,31 @@ export default {
     };
   },
   computed: {
-    todoLength1() {
-      return this.menuItems.length;
-    },
     ...mapState({
-      routers: state => state.memoryCache.Routers
+      routers: state => state.memoryCache.Routers,
+      hasNewVersion: state => state.memoryCache.HasNewVersion
     })
   },
   methods: {
     //刷新缓存
     refreshMemoryCache() {
-      this.$eventBus.emit("requestRefresh");
+      if ("refreshPage" == this.$route.name) {
+        this.$eventBus.emit("RequestGlobalRefresh");
+      } else {
+        this.$router.replace({
+          name: "refreshPage",
+          params: { t: new Date().getTime() }
+        });
+      }
     },
     onMenuClick(item) {
-      console.log(item);
+      this.selectMenu(item);
+      this.$router.replace({
+        name: item.routeName,
+        params: { t: new Date().getTime() }
+      });
+    },
+    selectMenu(item) {
       this.menuItems.forEach(element => {
         element.isSelected = element.perms === item.perms;
         element.class = element.isSelected
@@ -76,6 +100,7 @@ export default {
       var cs_meal = routers.find(m => m.perms === "cs_meal");
       if (cs_meal) {
         this.menuItems.push({
+          routeName: "orderIndex",
           isSelected: true,
           class: "menuItems menuItemsActive",
           perms: cs_meal.perms,
@@ -142,6 +167,7 @@ export default {
       var cs_bill = routers.find(m => m.perms === "cs_bill");
       if (cs_bill) {
         this.menuItems.push({
+          routeName: "billIndex",
           isSelected: false,
           class: "menuItems",
           perms: cs_bill.perms,

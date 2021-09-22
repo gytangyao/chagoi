@@ -1,3 +1,5 @@
+"use strict";
+
 String.prototype.handlePointAfterNum = function () {
   let len = this.length;
   let pointNum = 0;

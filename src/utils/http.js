@@ -1,3 +1,4 @@
+"use strict";
 import axios from 'axios'
 import { ElMessage, ElLoading } from 'element-plus';
 import router from './router'
@@ -226,6 +227,19 @@ function postUrlEncoded(url, data, hidLoading) {
 
 
 
+//get
+function get(url, data, hidLoading) {
+  var config = {
+    method: 'get',
+     hidLoading: hidLoading
+  };
+  data=addPublicData(data);
+  return axios.get(url, {params:data}, config)
+}
+
+
+
+
 //postRaw
 function postRaw(url, data, hidLoading) {
   var config = {
@@ -251,6 +265,28 @@ export function login(data,hidLoading=false) {
 export function findDeviceUserInfo(data,hidLoading=false) {
   let url = "/chagoi-bar-order/v1/device/findDeviceUserInfo";
   return postUrlEncoded(url, data,hidLoading)
+}
+
+
+export function findOverTablePrinterConfig(data,hidLoading=false) {
+  let url = "/chagoi-bar-order/v1/MallPayOrder/findOverTablePrinterConfig";
+  return postUrlEncoded(url, data,hidLoading)
+}
+
+export function getTableZone(data,hidLoading=false) {
+  let url = "/chagoi-bar-order/v1/foodTable/getTableZone";
+  return postUrlEncoded(url, data,hidLoading)
+}
+
+
+export function queryWaitTableCall(data,hidLoading=false) {
+  let url = "/chagoi-bar-order/customerWait/queryWaitTableCall";
+  return get(url, data,hidLoading)
+}
+
+export function getAllCommodityType(data,hidLoading=false) {
+  let url = "/chagoi-bar-order/v1/CommodityType/getAllCommodityType";
+  return postRaw(url, data,hidLoading)
 }
 
 export function sendBindCashiercyc(data,hidLoading=false) {

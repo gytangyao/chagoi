@@ -78,6 +78,7 @@
 </template>
 
 <script>
+"use strict";
 import { CircleClose } from "@element-plus/icons";
 import {
   login,

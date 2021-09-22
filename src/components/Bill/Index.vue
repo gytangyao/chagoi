@@ -1,5 +1,5 @@
 <template>
-  <span>Setting</span>
+  <span>bill.index</span>
 </template>
 
 <script>

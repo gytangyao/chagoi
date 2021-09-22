@@ -20,7 +20,7 @@ const state = () => ({
   OverTablePrintPre: false,
   IsTouchMode: false,
   HasNewVersion: false,
-  PinyinItemCaches: [],
+  PinyinItemCaches:{},
   PayRemarks: []
 })
 
@@ -93,6 +93,21 @@ const mutations = {
   setAccountManagers(state, accountManagers) {
     state.AccountManagers = accountManagers
   },
+  setPinYinItem(state,payload) {
+    state.PinyinItemCaches[payload.key] = payload.value
+  },
+  setOverTablePrintPre(state, overTablePrintPre){
+    state.OverTablePrintPre = overTablePrintPre
+  },
+  setOverTablePrintDetail(state, overTablePrintDetail){
+    state.OverTablePrintDetail = overTablePrintDetail
+  },
+  setTableZones(state, tableZones){
+    state.TableZones = tableZones
+  },
+  setCommodityTypes(state, commodityTypes){
+    state.CommodityTypes = commodityTypes
+  }
 }
 
 export default {

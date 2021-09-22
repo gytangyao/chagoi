@@ -1,3 +1,4 @@
+"use strict";
 import { createRouter, createWebHashHistory } from "vue-router"
 import Main from '../components/Main.vue'
 import store from '../store'
@@ -27,6 +28,16 @@ const routes = [
         path: "/refreshPage",
         name: "refreshPage",
         component:()=>import('../components/RefreshPage.vue')
+      },
+      {
+        path: "/orderIndex",
+        name: "orderIndex",
+        component:()=>import('../components/Order/Index.vue')
+      },
+      {
+        path: "/billIndex",
+        name: "billIndex",
+        component:()=>import('../components/Bill/Index.vue')
       }
     ]
   }
