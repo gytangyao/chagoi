@@ -38,8 +38,53 @@
       </div>
 
       <div class="tables">
-        <div class="table" v-for="item in tableModels" :key="item.id">
-          table
+        <div
+          class="table"
+          :style="{ background: item.background }"
+          v-for="item in tableModels"
+          :key="item.id"
+        >
+          <div class="r1">
+            <span
+              v-show="item.leftTopDisplayVisible"
+              :style="{
+                background: item.leftTopDisplayBackgroundColor,
+                color: item.leftTopDisplayTextColor
+              }"
+              >{{ item.leftTopDisplay }}</span
+            >
+            <span class="r1right" v-show="item.showPaid">已付款</span>
+          </div>
+
+          <span class="r2" :title="item.remark">{{ item.remark }}</span>
+          <div class="r3">
+            <span
+              :style="{ color: item.centerLine0DisplayTextColor }"
+              class="line1"
+              >{{ item.centerLine0Display }}</span
+            >
+            <span
+              :style="{ color: item.centerLine1DisplayTextColor }"
+              class="line2"
+              >{{ item.centerLine1Display }}</span
+            >
+          </div>
+
+          <div class="r4">
+            <span
+              class="r4left"
+              v-html="item.leftBottomDisplay"
+              :title="item.leftBottomDisplay"
+              :style="{
+                color: item.leftBottomDisplayTextColor
+              }"
+            ></span>
+            <span class="r4right" :title="item.waiterName">{{
+              item.waiterName
+            }}</span>
+          </div>
+
+          <div class="r5">{{ item.tableNumExtendName }}</div>
         </div>
       </div>
     </div>
@@ -49,6 +94,7 @@
 <script>
 "use strict";
 import { queryBookTable } from "../../utils/http";
+import { reReMappingTable } from "../../utils/comm";
 import { mapState } from "vuex";
 export default {
   created() {
@@ -83,10 +129,10 @@ export default {
     }
     /**填充桌台分区 */
     this.queryBookTable().then(tables => {
-      console.log(tables);
       if (tables && tables.length > 0) {
         tables.forEach(element => {
-          this.tableModels.push(element);
+          let mappinged = reReMappingTable(element);
+          this.tableModels.push(mappinged);
         });
       }
     });
@@ -309,8 +355,71 @@ export default {
 }
 
 .pageRoot .right .table {
-  height: 115px;
-  background: #fd7c72;
+  height: 125px;
   border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pageRoot .right .table .r1 {
+  height: 14px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.pageRoot .right .table .r1 .r1right {
+  background: #40b88f;
+  text-align: right;
+  font-size: 12px;
+  color: #ffffff;
+  border-radius: 4px;
+}
+
+.pageRoot .right .table .r2 {
+  height: 14px;
+  font-size: 12px;
+  color: #ffffff;
+  display: block;
+  word-break: keep-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  -icab-text-overflow: ellipsis;
+  -khtml-text-overflow: ellipsis;
+  -moz-text-overflow: ellipsis;
+  -webkit-text-overflow: ellipsis;
+}
+
+.pageRoot .right .table .r3 {
+  flex: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pageRoot .right .table .r4 {
+  min-height: 16px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.pageRoot .right .table .r4 .r4left {
+  white-space: pre-wrap;
+  font-size: 12px;
+}
+
+.pageRoot .right .table .r4 .r4right {
+  text-align: right;
+  font-size: 12px;
+  color: #ffffff;
+}
+
+.pageRoot .right .table .r5 {
+  text-align: center;
+  font-size: 16px;
+  color: #ffffff;
 }
 </style>
