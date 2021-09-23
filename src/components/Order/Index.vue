@@ -45,14 +45,16 @@
           :key="item.id"
         >
           <div class="r1">
-            <span
+            <div
+              class="r1left"
               v-show="item.leftTopDisplayVisible"
               :style="{
                 background: item.leftTopDisplayBackgroundColor,
                 color: item.leftTopDisplayTextColor
               }"
-              >{{ item.leftTopDisplay }}</span
             >
+              {{ item.leftTopDisplay }}1
+            </div>
             <span class="r1right" v-show="item.showPaid">已付款</span>
           </div>
 
@@ -84,7 +86,15 @@
             }}</span>
           </div>
 
-          <div class="r5">{{ item.tableNumExtendName }}</div>
+          <div
+            class="r5"
+            :style="{
+              background: item.tabNumBackground,
+              color: item.tabNumColor
+            }"
+          >
+            {{ item.tableNumExtendName }}
+          </div>
         </div>
       </div>
     </div>
@@ -359,6 +369,7 @@ export default {
   border-radius: 4px;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 }
 
 .pageRoot .right .table .r1 {
@@ -366,6 +377,10 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+.pageRoot .right .table .r1 .r1left {
+  border-radius: 4px 0px 0px 0px;
 }
 
 .pageRoot .right .table .r1 .r1right {
@@ -419,7 +434,8 @@ export default {
 
 .pageRoot .right .table .r5 {
   text-align: center;
-  font-size: 16px;
+  font-size: 17px;
   color: #ffffff;
+  border-radius: 0px 0px 4px 4px;
 }
 </style>
