@@ -13,7 +13,7 @@
       <div class="goodsCard"></div>
       <div class="moneyCard"></div>
     </div>
-    <div class="right">
+    <div class="right" ref="right">
       <div class="status">
         <div class="r1">
           <el-button
@@ -151,7 +151,7 @@ export default {
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
-  padding: 10px;
+  padding: 5px;
   align-items: stretch;
 }
 
@@ -240,7 +240,7 @@ export default {
 
 .pageRoot .right .status {
   margin-left: 10px;
-  height: 143px;
+  min-height: 143px;
   background: #30343d;
   border-radius: 6px;
   box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.09);
@@ -298,24 +298,19 @@ export default {
 }
 
 .pageRoot .right .tables {
-  display: flex;
+  display: grid;
   flex-wrap: wrap;
-  padding: 10px;
-  top: 170px;
-  bottom: 10px;
-  position: fixed;
   overflow-y: scroll;
   overflow-x: hidden;
+  justify-content: space-between;
+  padding: 10px;
+  grid-template-columns: repeat(auto-fill, 115px);
+  grid-row-gap: 10px;
 }
 
 .pageRoot .right .table {
-  margin: 3px;
-  flex: auto;
-  min-width: 126px;
-
-  min-height: 126px;
+  height: 115px;
   background: #fd7c72;
   border-radius: 4px;
-  align-self: flex-start;
 }
 </style>

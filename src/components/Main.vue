@@ -22,7 +22,9 @@
           <span class="label">同步:</span>
           <span :class="iotClass">正常</span>
         </div>
-        <el-button @click="refreshMemoryCache" type="info">刷新</el-button>
+        <el-button @click="refreshMemoryCache" type="info" size="mini"
+          >刷新</el-button
+        >
         <div class="item">
           <span class="label">V1.1323</span>
         </div>
@@ -283,16 +285,12 @@ export default {
 }
 
 .root .left .setting .el-button--info {
-  height: 24px;
   background: #3a3d43;
   border-radius: 14px;
   border: transparent;
   font-size: 12px;
   font-family: PingFangSC, PingFangSC-Regular;
-  font-weight: 400;
-  text-align: left;
   color: #a9a9a9;
-  min-height: 35px;
 }
 
 .root .right {

@@ -3,30 +3,29 @@
 import { app, protocol, BrowserWindow } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
-const ipcMain = require('electron').ipcMain
+const ipcMain = require("electron").ipcMain;
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
-  { scheme: "app", privileges: { secure: true, standard: true } },
+  { scheme: "app", privileges: { secure: true, standard: true } }
 ]);
 
 async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    icon: 'favicon.ico',
+    icon: "favicon.ico",
     frame: false,
     transparent: true,
     fullscreen: true,
+    resizable: false,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       webSecurity: false,
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
-    },
+    }
   });
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -70,17 +69,15 @@ app.on("ready", async () => {
   createWindow();
 });
 
-
-ipcMain.on('open-save-chart-dialog', (event, arg) => {
-  console.log(arg) // prints "ping"
+ipcMain.on("open-save-chart-dialog", (event, arg) => {
+  console.log(arg); // prints "ping"
   app.exit();
-})
-
+});
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
   if (process.platform === "win32") {
-    process.on("message", (data) => {
+    process.on("message", data => {
       if (data === "graceful-exit") {
         app.quit();
       }
