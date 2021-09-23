@@ -1,11 +1,16 @@
 var moment = require("moment");
 
+
+/**
+ * 重新映射桌台信息
+ * @param {table} table 
+ * @returns 
+ */
 export function reReMappingTable(table) {
     table.inReserve = table.reserveStatus;
-    // if (table.reserveDate)
-    // {
-    //     table.reserveDateDisplay =table.reserveDate.ToDateTime(TimeZoneInfo.Local).AddHours(8).ToString("HH:mm");
-    // }
+    if (table.reserveDate) {
+        table.reserveDateDisplay = toDateTime(table.reserveDate);
+    }
 
     table.seatCountDisplay = `${table.seatCount}人桌`;
     table.tableNumExtendName = `${table.tableNum}`;
@@ -71,8 +76,7 @@ export function reReMappingTable(table) {
     }
 
     var lowestConsumerStateDisplay = table.lowestConsumerState ? "[开]" : "[关]";
-    var leftBottomDisplay = `${table.lowestConsumer ? 0 : table.lowestConsumer
-        }${lowestConsumerStateDisplay}`;
+    var leftBottomDisplay = `${table.lowestConsumer ? 0 : table.lowestConsumer}${lowestConsumerStateDisplay}`;
     if (table.clientName) {
         leftBottomDisplay += `<br/>${table.clientName}`;
     }
@@ -84,6 +88,8 @@ export function reReMappingTable(table) {
         //空闲
         case 0:
             table.background = "#3F434B";
+            table.tabNumBackground = "#52565D";
+            table.tabNumColor = "#C3C8DB";
             table.showPaid = false;
 
             table.leftTopDisplayVisible = false;
@@ -100,12 +106,11 @@ export function reReMappingTable(table) {
         //已预定
         case 1:
             table.background = "#FFE1A4";
+            table.tabNumBackground = "#E1C07D";
+            table.tabNumColor = "#9C721D";
             table.showPaid = false;
             table.leftTopDisplayVisible = true;
-
-            table.leftTopDisplay = moment
-                .unix(table.reserveDate / 1000)
-                .format("HH:mm");
+            table.leftTopDisplay = toDateTime(table.reserveDate, "HH:mm");
             table.leftTopDisplayTextColor = "#9C721D";
             table.leftTopDisplayBackgroundColor = "#FFE1A4";
 
@@ -120,12 +125,12 @@ export function reReMappingTable(table) {
         //开台未付款
         case 2:
             table.background = "#FD7C72";
+            table.tabNumBackground = "#E7685E";
+            table.tabNumColor = "#FFFFFF";
             table.showPaid = false;
             table.leftTopDisplayVisible = true;
             if (table.inReserve) {
-                table.leftTopDisplay = moment
-                    .unix(table.reserveDate / 1000)
-                    .format("HH:mm");
+                table.leftTopDisplay = toDateTime(table.reserveDate, "HH:mm");
                 table.leftTopDisplayTextColor = "#9C721D";
                 table.leftTopDisplayBackgroundColor = "#FFE1A4";
             } else {
@@ -145,6 +150,8 @@ export function reReMappingTable(table) {
         //开台已付款
         case 3:
             table.background = "#FD7C72";
+            table.tabNumBackground = "#E7685E";
+            table.tabNumColor = "#FFFFFF";
             //针对刚开台还没有点菜的桌台   后台返回3(已付款)  进行二次处理
             if (table.payMoney && table.payMoney > 0) {
                 table.showPaid = true;
@@ -154,9 +161,7 @@ export function reReMappingTable(table) {
 
             table.leftTopDisplayVisible = true;
             if (table.inReserve) {
-                table.leftTopDisplay = moment
-                    .unix(table.reserveDate / 1000)
-                    .format("HH:mm");
+                table.leftTopDisplay = toDateTime(table.reserveDate, "HH:mm");
                 table.leftTopDisplayTextColor = "#9C721D";
                 table.leftTopDisplayBackgroundColor = "#FFE1A4";
             } else {
@@ -179,6 +184,26 @@ export function reReMappingTable(table) {
 }
 
 
+/**
+ * 将时间戳转为时间
+ * 如果转换失败,返回 ""
+ * @param {*} v 
+ * @returns 
+ */
+export function toDateTime(v, format) {
+    if (v) {
+        return moment.unix(v / 1000).format(format);
+    } else {
+        return "";
+    }
+}
+
+/**
+ * 将数字保留两位返回
+ * 如果不是数字,返回0.00
+ * @param {*} v 
+ * @returns 
+ */
 export function toNumber(v) {
     const defaultValue = 0;
     if (v) {
